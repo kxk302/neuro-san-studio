@@ -1,20 +1,12 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-29T10:29:36-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-29T15:02:12-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
 evaluate, and deploy AI agents and multi-agent systems. ADK supports five programming languages:
 Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python version of ADK.</p>
 
 <h1 id="table-of-contents">Table of Contents</h1>
 <ol>
   <li><a href="#quick_start">Python Quickstart</a></li>
-  <li><a href="#related">Related Work</a></li>
-  <li><a href="#framework">The TSVD Framework</a>
-    <ol>
-      <li><a href="#svd">Singular Value Decomposition (SVD)</a></li>
-      <li><a href="#terminology">The TSVD Terminology</a></li>
-      <li><a href="#qr">QR Decomposition</a></li>
-      <li><a href="#caching">Caching</a></li>
-      <li><a href="#rank">Rank Selection</a></li>
-    </ol>
-  </li>
+  <li><a href="#multi_tool">Building a Multi-tool Agent</a></li>
+  <li><a href="#multi_agent">Building an Agent Team</a></li>
   <li><a href="#compression">Configuring Compression Ranks</a></li>
   <li><a href="#experiments">Experiments</a>
     <ol>
@@ -42,24 +34,24 @@ Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python versi
 
 <p>Prerequisites: You need Python 3.10 or newer and <code class="language-plaintext highlighter-rouge">pip</code> for installing packages.</p>
 
-<ol>
-  <li>Create a Python virtual environment and activate it:</li>
-</ol>
+<ul>
+  <li><strong>Create a Python virtual environment and activate it</strong></li>
+</ul>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 <span class="nt">-m</span> venv .venv
 <span class="nb">source</span> .venv/bin/activate
 </code></pre></div></div>
 
-<ol>
-  <li>Install ADK:</li>
-</ol>
+<ul>
+  <li><strong>Install ADK</strong></li>
+</ul>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>pip <span class="nb">install </span>google-adk
 </code></pre></div></div>
 
-<ol>
-  <li>Create a new project using <code class="language-plaintext highlighter-rouge">adk create</code> command:</li>
-</ol>
+<ul>
+  <li><strong>Create a new project using <code class="language-plaintext highlighter-rouge">adk create</code> command</strong></li>
+</ul>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk create my_agent
 </code></pre></div></div>
@@ -72,10 +64,12 @@ Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python versi
     __init__.py
 </code></pre></div></div>
 
-<ol>
-  <li>Update the agent definition. The agent.py file contains an agent definition. You can define tools
-for the agent to use. Update agent.py code to include a get_current_time tool for use by the agent, as follows:</li>
-</ol>
+<ul>
+  <li><strong>Update the agent definition:</strong></li>
+</ul>
+
+<p>The <code class="language-plaintext highlighter-rouge">agent.py</code> file contains an agent definition. You can define tools for the agent to use.
+Update <code class="language-plaintext highlighter-rouge">agent.py</code> code to include a <code class="language-plaintext highlighter-rouge">get_current_time</code> tool for use by the agent, as follows:</p>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">google.adk.agents.llm_agent</span> <span class="kn">import</span> <span class="n">Agent</span>
 
@@ -94,9 +88,9 @@ for the agent to use. Update agent.py code to include a get_current_time tool fo
 <span class="p">)</span>
 </code></pre></div></div>
 
-<ol>
-  <li>Set your API key</li>
-</ol>
+<ul>
+  <li><strong>Set your API key</strong></li>
+</ul>
 
 <p>This agent network uses a Gemini model which requires an API key. Get an API key from
 <a href="https://aistudio.google.com/app/apikey">Google AI Studio</a> and write it into your <code class="language-plaintext highlighter-rouge">.env</code>
@@ -105,9 +99,9 @@ file via:</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nb">echo</span> <span class="s1">'GOOGLE_API_KEY="YOUR_API_KEY"'</span> <span class="o">&gt;</span> .env
 </code></pre></div></div>
 
-<ol>
-  <li>Run your agent via command-line interface</li>
-</ol>
+<ul>
+  <li><strong>Run your agent via command-line interface</strong></li>
+</ul>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk run my_agent
 </code></pre></div></div>
@@ -115,16 +109,81 @@ file via:</p>
 
 <p><img src="/kxk302/images/my_agent_cli.png" alt="Agent interaction" /></p>
 
-<ol>
-  <li>Run your agent via web interface via the command below. This command starts a web server
-with a chat interface for your agent. You can access the web interface at http://localhost:8000.
-Select the agent at the upper left corner and type a request.</li>
-</ol>
+<ul>
+  <li><strong>Run your agent via web interface</strong></li>
+</ul>
+
+<p>The command below starts a web server with a chat interface for your agent. You can
+access the web interface at http://localhost:8000. Select the agent at the upper
+left corner and type a request.</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk web <span class="nt">--port</span> 8000
 </code></pre></div></div>
 
 <p><img src="/kxk302/images/my_agent_web.png" alt="Agent interaction" /></p>
+
+<ul>
+  <li><strong>Run your agent by sending requests to an API server</strong></li>
+</ul>
+
+<p>The command below will launch a local web server on http://localhost:8000</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk api_server <span class="nt">--auto_create_session</span>
+</code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">--auto_create_session</code> flag automatically generates a new session if one
+does not already exist when running the application. You can use <code class="language-plaintext highlighter-rouge">curl</code> commands
+to interact with the local web server.</p>
+
+<p>To check server’s health or it’s version:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET http://localhost:8000/health
+curl <span class="nt">-X</span> GET http://localhost:8000/version
+</code></pre></div></div>
+
+<p>To list the available agent network:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET http://localhost:8000/list-apps
+</code></pre></div></div>
+
+<p>To send a request to <code class="language-plaintext highlighter-rouge">my_agent</code> agent network:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST http://localhost:8000/run <span class="se">\</span>
+  <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
+  <span class="nt">-d</span> <span class="s1">'{
+    "appName": "my_agent",
+    "userId": "u_123",
+    "sessionId": "s_abc",
+    "newMessage": {
+      "role": "user",
+      "parts": [{"text": "Hello, can you help me?"}]
+    }
+  }'</span>
+</code></pre></div></div>
+
+<h2 id="building-a-multi-tool-agent-">Building a Multi-tool Agent <a name="multi_tool"></a></h2>
+
+<p>Simply, define another function in <code class="language-plaintext highlighter-rouge">agent.py</code>, e.g.:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Mock tool implementation
+</span><span class="k">def</span> <span class="nf">get_current_weather</span><span class="p">(</span><span class="n">city</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">Returns the current weather in a specified city.</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="p">{</span><span class="sh">"</span><span class="s">status</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">success</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">city</span><span class="sh">"</span><span class="p">:</span> <span class="n">city</span><span class="p">,</span> <span class="sh">"</span><span class="s">weather</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Sunny with a temperature of 77 degrees Fahrenheit</span><span class="sh">"</span><span class="p">}</span>
+</code></pre></div></div>
+
+<p>Add the new function name to <code class="language-plaintext highlighter-rouge">tools</code> list in <code class="language-plaintext highlighter-rouge">root_agent</code>, and update the description/instruction:</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">'</span><span class="s">gemini-flash-latest</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">root_agent</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="sh">"</span><span class="s">Tells the current time or weather in a specified city.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"""</span><span class="s">You are a helpful assistant that tells the current time or weather in cities.
+    Use the </span><span class="sh">'</span><span class="s">get_current_time</span><span class="sh">'</span><span class="s"> or </span><span class="sh">'</span><span class="s">get_current_weather</span><span class="sh">'</span><span class="s"> tools for these purposes.</span><span class="sh">"""</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">get_current_time</span><span class="p">,</span> <span class="n">get_current_weather</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="building-an-agent-team-">Building an Agent Team <a name="multi_agent"></a></h2>
 
 <h2 id="related-work-">Related Work <a name="related"></a></h2>
 
