@@ -1,0 +1,13 @@
+title: Kaivan's Blog
+description: AI/ML Research, LLMs, and Software Engineering
+url: "https://kxk302.github.io"
+baseurl: "/kxk302"
+
+theme: minima
+
+markdown: kramdown
+kramdown:
+  math_engine: mathjax
+
+plugins:
+  - jekyll-feed
