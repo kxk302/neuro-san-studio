@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-29T15:02:12-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-29T16:34:26-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
 evaluate, and deploy AI agents and multi-agent systems. ADK supports five programming languages:
 Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python version of ADK.</p>
 
@@ -6,28 +6,8 @@ Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python versi
 <ol>
   <li><a href="#quick_start">Python Quickstart</a></li>
   <li><a href="#multi_tool">Building a Multi-tool Agent</a></li>
+  <li><a href="#runner_session">Manual Runner/Session Setup</a></li>
   <li><a href="#multi_agent">Building an Agent Team</a></li>
-  <li><a href="#compression">Configuring Compression Ranks</a></li>
-  <li><a href="#experiments">Experiments</a>
-    <ol>
-      <li><a href="#hyper">Hyperparameter Setup</a></li>
-      <li><a href="#evaluation">Pretraining Evaluation</a>
-        <ol>
-          <li><a href="#pretraining">Pretraining Performance</a></li>
-          <li><a href="#benchmark">Benchmark Performance</a></li>
-        </ol>
-      </li>
-      <li><a href="#ablation">Ablation Studies</a>
-        <ol>
-          <li><a href="#qr_ablation">Impact of QR Decomposition</a></li>
-          <li><a href="#cache_ablation">Impact of Caching Mechanism</a></li>
-          <li><a href="#rank_ablation">Impact of Compression Rank Selection</a></li>
-        </ol>
-      </li>
-    </ol>
-  </li>
-  <li><a href="#future">Discussion and Future Work</a></li>
-  <li><a href="#conclusion">Conclusion</a></li>
 </ol>
 
 <h2 id="python-quickstart-">Python Quickstart <a name="quick_start"></a></h2>
@@ -80,7 +60,7 @@ Update <code class="language-plaintext highlighter-rouge">agent.py</code> code t
 
 <span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="sh">'</span><span class="s">gemini-flash-latest</span><span class="sh">'</span><span class="p">,</span>
-    <span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">root_agent</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">current_time_agent</span><span class="sh">'</span><span class="p">,</span>
     <span class="n">description</span><span class="o">=</span><span class="sh">"</span><span class="s">Tells the current time in a specified city.</span><span class="sh">"</span><span class="p">,</span>
     <span class="n">instruction</span><span class="o">=</span><span class="sh">"""</span><span class="s">You are a helpful assistant that tells the current time in cities.
     Use the </span><span class="sh">'</span><span class="s">get_current_time</span><span class="sh">'</span><span class="s"> tool for this purpose.</span><span class="sh">"""</span><span class="p">,</span>
@@ -183,162 +163,95 @@ curl <span class="nt">-X</span> GET http://localhost:8000/version
 <span class="p">)</span>
 </code></pre></div></div>
 
-<h2 id="building-an-agent-team-">Building an Agent Team <a name="multi_agent"></a></h2>
+<h2 id="manual-runnersession-setup-">Manual Runner/Session Setup <a name="runner_session"></a></h2>
 
-<h2 id="related-work-">Related Work <a name="related"></a></h2>
+<p>When you run an agent network using the ADK CLI (such as <code class="language-plaintext highlighter-rouge">adk web</code>), the CLI handles a lot
+of the boilerplate infrastructure under the hood – it automatically instantiates a <code class="language-plaintext highlighter-rouge">SessionService</code>
+to manage the sessions between users and agents, and a <code class="language-plaintext highlighter-rouge">Runner</code> that drives the agent’s execution
+loop, taking incoming user messages and invoking the necessary models or tools.</p>
 
-<p>Previous approaches for reducing LLM pretraining costs fall into two main categories: (1) parameter-preserving methods, which improve training efficiency without modifying model size, and (2) parameter-reducing methods, which factorize weight matrices directly. In this blog, we focus on parameter-reducing methods because they offer greater potential for lowering LLM pretraining costs.</p>
-
-<p>Existing approaches to maintaining orthonormality fall into three categories: (1) initializing weight
-matrices as orthonormal, and not compensating for the inevitable deviation from orthonormality
-during unconstrained optimization; (2) employing soft regularizers, which introduce additional hyperparameters for encouraging orthonormality;
-and (3) periodically projecting weights back onto the orthonormal manifold. The latter approach is most closely related to the TSVD method and is discussed in this subsection.</p>
-
-<p>The <a href="https://openreview.net/forum?id=i0zzO7Hslk">LORO</a> method utilizes Riemannian optimization to maintain weight constraints. As the mathematical context, a manifold is a topological space that is locally flat but could be curved globally, such as a plane, sphere, torus, or saddle-shaped surface. A Riemannian manifold provides a way to measure distances, angles, etc. using a Riemannian metric. In Riemannian optimization variables are constrained to lie on a smooth manifold $\mathcal{M}$ (such as a sphere), rather than a flat Euclidean space $\mathbb{R}^n$. The core concepts for Riemannian optimization are thus:</p>
+<p>While the ADK CLI is an exceptional tool for rapid prototyping, debugging, and local development, it is
+designed primarily as a developer sandbox. For production environments, we must explicitly define
+a <code class="language-plaintext highlighter-rouge">SessionService</code> and a <code class="language-plaintext highlighter-rouge">Runner</code>, which we will do next.</p>
 
 <ul>
-  <li><strong>The Manifold (\(\mathcal{M}\))</strong>: The search space.</li>
-  <li><strong>Tangent Space ($T_x\mathcal{M}$)</strong>: At any point $x \in \mathcal{M}$, the tangent space is a linear approximation of the manifold’s local geometry. Gradients are computed in this space.</li>
-  <li><strong>Riemannian Gradient</strong>: The projection of the standard Euclidean gradient onto the tangent space, denoted as $\operatorname{grad} f(x) = \text{P}_{T_x\mathcal{M}}(\nabla f(x))$.</li>
-  <li><strong>Retraction</strong>: A mapping $R_x: T_x\mathcal{M} \to \mathcal{M}$ that moves an element from the tangent space back onto the manifold.</li>
+  <li><strong>Import the necessary packages</strong></li>
 </ul>
 
-<p>LORO searches on the <em>low-rank matrix manifold</em>, defined as the set of matrices with a fixed rank $r$. Each matrix $W$ has a <em>unique representation</em>, eliminating redundancy during the search process. However, the retraction operation requires an SVD operation, which is computationally expensive. The cost, in the number of FLOPs, for a matrix $W \in \mathbb{R}^{m \times n}$ is $mn^2 + n^3$.</p>
-
-<p>To manage this cost, LORO executes the SVD retraction sparingly, every $K = 500$ steps. In contrast, the QR decomposition in TSVD optimizes over the <em>Stiefel manifold</em>, i.e. the set of all matrices with orthonormal columns, denoted as $St(n,r) = { X \in \mathbb{R}^{n \times r} \mid X^\top X = I_r }.$
-This approach may result in <em>non-unique representations</em>, since different factors ($U, \Sigma, V$) can represent the same product $W$, which could be a limitation. However, the QR decomposition is significantly more efficient than the SVD operation.
-Thus, the assumption of TSVD is that the computational efficiency of the projection onto the Stiefel manifold outweighs the theoretical benefits of unique representation on the fixed-rank manifold. Indeed, the results in this paper suggest that, given the massive scale of current and future LLMs, the significant reduction in retraction overhead justifies the inherent redundancy in factorized representation, making TSVD a more practical approach for large-scale optimization than other current methods.</p>
-
-<p>Distinct from the weight-centric strategies mentioned above, <a href="https://arxiv.org/pdf/2502.10940">COLA</a> leverages the low-rank nature of LLM activations by replacing Multilayer Perceptron (MLP) and attention projection layers with low-rank autoencoders. Its memory-efficient variant, COLA-M, further reduces overhead by utilizing low-rank activations, while both frameworks preserve the original query, key, and value projection structures.</p>
-
-<p>In summary, low-rank weight matrix representations offer the most significant reductions in pretraining memory and computational overhead. The integration of orthonormality constraints helps mitigate the performance trade-offs typical of low-rank methods. However, due to high computational costs, previous techniques have not maintained orthonormality throughout the entire training duration. The TSVD method proposed in this paper ensures strict orthonormality at every iteration and, to the best of our knowledge, is the first approach to achieve this goal in a pretraining setting.</p>
-
-<h2 id="the-tsvd-framework-">The TSVD Framework <a name="framework"></a></h2>
-
-<p>In this section, SVD and TSVD are reviewed, and the TSVD layer, model, and its corresponding training methodology are introduced. Next, QR decomposition, caching, and rank selection methods are described. The TSVD algorithm is summarized in <strong>Algorithm 1</strong></p>
-
-<p><img src="/kxk302/images/Algorithm_1.png" alt="Algorithm 1" /></p>
-
-<h3 id="singular-value-decomposition-svd-">Singular Value Decomposition (SVD) <a name="svd"></a></h3>
-
-<p>SVD is a fundamental matrix factorization method widely used in linear algebra, statistics, and machine learning. At its core, it expresses any matrix as a product of three simpler matrices. For any $m \times n$ matrix $W$, the SVD is</p>
-
-\[W = U \Sigma V^T \tag{1}\]
-
-<p>where $U \in \mathbb{R}^{m \times m}$ comprises the left singular vectors (orthonormal matrix), $\Sigma \in \mathbb{R}^{m \times n}$ are singular values (diagonal matrix with non-negative entries), and $V \in \mathbb{R}^{n \times n}$ comprises the right singular vectors (orthonormal matrix). Thus, SVD decomposes a linear transformation into three distinct geometric operations: $V^T$ rotates the input into a new coordinate system, $\Sigma$ scales the vector along orthogonal axes, and $U$ rotates the result into the output’s coordinate system.</p>
-
-<p>For any $m \times n$ matrix $W$, Truncated SVD (TSVD) is a low-rank approximation of SVD, defined as</p>
-
-\[W \approx  U_k \Sigma_k V_k^T \tag{2}\]
-
-<p>where $U_k$  is the first $k$ columns of $U$, $\Sigma_k$ is the diagonal matrix with the top $k$ singular values, and $V_k$ is the first $k$ columns of $V$. Thus, the truncated version discards the smaller singular values and their corresponding directions.</p>
-
-<h3 id="the-tsvd-terminology-">The TSVD Terminology <a name="terminology"></a></h3>
-
-<p>The TSVD framework consists of three core abstractions. A <strong>TSVD layer</strong> approximates a full weight matrix $W \in \mathbb{R}^{m \times n}$ via truncated factorization $W \approx U_k \Sigma_k V_k^T$. Here, $U_k \in \mathbb{R}^{m \times k}$, $\Sigma_k \in \mathbb{R}^{k \times k}$, and $V_k^T \in \mathbb{R}^{k \times n}$ are initialized as unconstrained trainable parameters. During the forward pass, the layer enforces structural constraints: $U_k$ and $V_k$ are projected onto orthonormal matrices via QR decomposition, while $\Sigma_k$ is constrained to a positive-valued diagonal vector. Constraining $U_k$ and $V_k$ to be orthonormal is what provides the stability benefits established in prior work on orthogonal and semi-orthogonal parameterizations. Second, a <strong>TSVD model</strong> is a neural network that replaces standard dense weight matrices with TSVD layers. Third, <strong>TSVD training</strong> is the end-to-end training process of a TSVD model, wherein structural orthonormality constraints are maintained across every training iteration.</p>
-
-<h3 id="qr-decomposition-">QR Decomposition <a name="qr"></a></h3>
-
-<p>Low-rank approximation of $W$ reduces the number of parameters from $mn$ to $mk + k + kn = k(m+n+1) \approx k(m+n)$. For example, if $W$ is a $1000$ by $800$ matrix, and $k = 128$, the number of parameters reduces from $800,000$ to $128*(1000 + 800 +1) = 230,528$, i.e. by $\approx 71\%$. The benefits are twofold: (1) lower memory requirements for storing parameters, gradients, and optimizer states, and (2) reduced computational cost, as measured in FLOPs, because multiplying the input by a low-rank approximation of $W$ is less costly than multiplying the input by $W$. The TSVD framework relies on QR decomposition in the forward pass to enforce orthonormality on unconstrained trainable parameters. The cost, in the number of FLOPs, for a matrix is $\in \mathbb{R}^{m \times k}$ is</p>
-
-\[2mk^2 - \frac{2}{3}k^3 \tag{3}\]
-
-<h3 id="caching-">Caching <a name="caching"></a></h3>
-
-<p>To mitigate the computational overhead of QR decomposition, the structure of gradient accumulation can be leveraged. While larger batch sizes make training of LLMs more stable, hardware constraints often require splitting an effective batch into smaller mini-batches. For example, an effective batch of 1024 is processed as four mini-batches of 256, with gradients accumulated before a single parameter update. The TSVD training includes a caching mechanism that computes the QR decomposition during the initial mini-batch and reuses the result for all subsequent mini-batches within the same update. This approach ensures that the expensive orthonormalization occurs only once per parameter update, effectively amortizing the computational cost while preserving the benefits of orthonormality.</p>
-
-<h3 id="rank-selection-">Rank Selection <a name="rank"></a></h3>
-
-<p>Existing low-rank methods typically apply a uniform rank across all layers and weight matrices, regardless of their functional roles. However, this choice may be suboptimal, because weight matrices in different components of a transformer decoder layer can require different ranks to perform well.</p>
-
-<p>The TSVD framework employs the spectral energy of weight matrices of pretrained models as a heuristic for rank selection. First, SVD is applied to the weight matrices of the pretrained model, obtaining the diagonal matrix $\Sigma$ with singular values $\sigma_1, \sigma_2, \dots, \sigma_n$. The total energy of a full-rank matrix $W$ is then defined as the sum of these values. Second, to determine the rank for the low-rank approximation, the energy for a truncated set of ranks is calculated.  The <em>compression rank</em>, $r_{\alpha}(W)$, to preserve at least $\alpha$ (e.g., $95\%$) of the total energy is then defined as</p>
-
-\[r_\alpha(W) = \min \left\{ k \mid \frac{\sum_{i=1}^{k} \sigma_i^2}{\sum_{j=1}^{n} \sigma_j^2} \ge \alpha \right\} \tag{4}\]
-
-<p>The value of $\alpha$ is selected based on the desired reduction in model’s parameter count and is used to determine the compression rank of the weight matrices across different layers. Since compression rank generally varies across layers – for example, MLP weight matrices typically exhibit higher compression ranks than attention weight matrices – this approach supports variable rather than uniform rank selection. In the next section, we analyze the compression ranks across models of various sizes within an LLM family to determine their configurations.</p>
-
-<h2 id="configuring-compression-ranks-">Configuring Compression Ranks <a name="compression"></a></h2>
-
-<p>Compression ranks are analyzed across the experimental suite of full-parameter Llama-style LLMs, ranging from 60M to 1.3B parameters. Compression rank (Eq. 4) is computed for each linear weight matrix within the transformer decoder layers. Those are the query, key, value and out projection within the attention mechanism and the gate, up and down projections in the MLP. The compression ranks for the models in the experimental suite are provided in <strong>Figure 4</strong>. Across layers, the compression ranks of different projection types (query, key, etc.) are consistent, with the exception of the earliest layers. Motivated by this stability, compression ranks are averaged across layers for comparison across model scales.</p>
-
-<p><img src="/kxk302/images/Figure_4.png" alt="Figure 4" /></p>
-
-<p><strong>Figure 1a</strong> illustrates the compression ranks across the different model sizes in the experimental suite. The main observation is that they scale approximately linearly with model size. Notably, the major architectural parameters (<strong>Table 1</strong>), that is, the number of transformer layers $n_{\text{layers}}$, the number of heads per layer $n_{\text{heads}}$, the hidden dimension $d_1$, and the MLP intermediate dimension $d_2$, scale uniformly across the models. When normalizing compression ranks (we chose the  compression rank of the out projection) of the model (<strong>Figure 1b</strong>), the relative proportions between ranks of different projections are nearly constant across model sizes. Overall, these results indicate that <em>compression ranks measured on smaller models can be used to estimate those of larger models algorithmically</em>.</p>
-
-<p><img src="/kxk302/images/Figure_1.png" alt="Figure 1" /></p>
-
-<p>To assess the generality of the findings and highlight potential deviations, the analysis was extended to large, publicly available model families: Llama-2, Llama-3.1, and Olmo 3. Detailed results are provided in paper’s Appendix. The results show that the compression ranks determined for small models can be used to predict the compression ranks at larger model sizes given the correct scaling of its hyperparameters.</p>
-
-<p><img src="/kxk302/images/Table_1.png" alt="Table 1" /></p>
-
-<p>For the pretraining experiments in <a href="#pretraining">Pretraining Performance</a>, the consistent relationships observed between the compression ranks of different functional components in <strong>Figure 1a</strong> guided the rank selection; E.g., the compression ranks for the value and output projections layers were $18\%$ larger than those for the query and key projections. The compression rank ratios were then maintained when scaling to larger target architectures in the rest of the experiments. That is, while absolute ranks are scaled according to a target parameter budget, the relative rank selections adhere to these relationships.</p>
-
-<h2 id="experiments-">Experiments <a name="experiments"></a></h2>
-
-<p>This section details preliminary experiments establishing hyperparameters, followed by a performance comparison across model scales for TSVD, full-parameter, and low-rank architectures during pretraining and evaluation. Finally, ablation studies examine the impact of the QR decomposition, caching mechanism, and the role of variable rank selection.</p>
-
-<h3 id="hyperparameter-setup-">Hyperparameter Setup <a name="hyper"></a></h3>
-
-<p>To tune hyperparameters across the TSVD experimental suite, the Maximal Update Parametrization framework was employed, which mitigates the prohibitive computational cost of optimization in large neural networks. By properly scaling initialization and learning rates, $\mu$P guarantees stable forward-pass activations and backward-pass gradient updates as model width increases. Crucially, this property enables zero-shot hyperparameter transfer, allowing optimal learning rates identified on small, computationally cheap models to transfer directly to significantly larger models without additional tuning. Accordingly, TSVD hyperparameter searches used the lightweight Llama-60M variant, requiring approximately 30 minutes of compute.</p>
-
-<h3 id="pretraining-evaluation-">Pretraining Evaluation <a name="evaluation"></a></h3>
-
-<p>This section provides a performance comparison across model scales for TSVD, full-parameter, and low-rank architectures during pretraining and evaluation.</p>
-
-<h4 id="pretraining-performance-">Pretraining Performance <a name="pretraining"></a></h4>
-
-<p>A series of Llama-style LLMs with scales ranging from 60M to 7B parameters were pretrained in the language modeling task. The experimental framework strictly followed the benchmark protocols established in the literature. However, the benchmarks were ported to the HuggingFace ecosystem, using <em>accelerate</em> for launching distributed runs across GPUs. Four architectural configurations were evaluated: dense full-parameter models, models with low-rank approximations of linear and attention layers, models with CoLA-based linear layers, and the proposed TSVD approach. This enables comparison of TSVD with traditional and state-of-the-art reparameterization methods.</p>
-
-<p>Models were trained on the Colossal Clean Crawled Corpus, a massive web-scale dataset derived from Common Crawl. C4 uses strict heuristic filtering to remove low-quality, repetitive, and offensive data. Comprising of 365M documents and 150B tokens, C4 serves as a standard benchmark for pretraining prominent models like T5.</p>
-
-<p><img src="/kxk302/images/Table_2.png" alt="Table 2" /></p>
-
-<p>The results for models up to 1.3B are included in <strong>Table 2</strong>. Across all model scales, TSVD models consistently achieved lower perplexity than their full-parameter counterparts. TSVD models contained between $24\%$ and $51\%$ fewer parameters, yielding a corresponding reduction in the memory footprint for parameters, gradients, and optimizer states. Note that while the full-parameter, low-rank, and CoLA experiments were designed to replicate results reported in the literature, the modern Hugging Face implementation yielded significantly improved accuracies for them. These enhancements may be attributed to several factors, including modernized weight initialization schemes, refined tokenization processes, and the utilization of better optimization hyperparameters.</p>
-
-<p><img src="/kxk302/images/Table_3.png" alt="Table 3" /></p>
-
-<p>The scale-up properties of TSVD were demonstrated further on a Llama-7B model, which takes an average of 10 full days to pretrain on an NVIDIA H200 GPU node. The results are presented in <strong>Table 3</strong>. Although the TSVD model’s perplexity is $\approx 3\%$ higher than that of the full-parameter model, it contains over 2B fewer parameters – significantly reducing memory overhead for parameters, gradients, and optimizer states. Furthermore, as shown in <strong>Table 3</strong>, the perplexity gap between the full-parameter and TSVD models narrows as training progresses, decreasing from 0.48 at 50k steps to 0.30 at 100k, and 0.19 at 150k. Given the observed trajectory, further training would likely narrow this performance gap even more. These results demonstrate that TSVD scales effectively to larger models, offering a robust and memory-efficient approach to large-scale pretraining.</p>
-
-<p><img src="/kxk302/images/Table_4.png" alt="Table 4" /></p>
-
-<h4 id="benchmark-performance-">Benchmark Performance <a name="benchmark"></a></h4>
-
-<p>Having established that TSVD models perform well in pretraining task, It is important to assess pretrained model transfer to application benchmarks. To this end, the pretrained full-parameter and TSVD models were evaluated in key commonsense reasoning and text/context understanding tasks: HellaSwag, PIQA, and LAMBADA. Detailed accuracy results are reported in <strong>Table 4</strong>. The experimental results demonstrate that the TSVD models consistently match or outperform full-parameter models across the entire suite of evaluation benchmarks, with the sole exception of the Llama-350M variant on the LAMBADA dataset. Consequently, aligning closely with its strong pretraining trajectory, TSVD maintains competitive generalization and robust performance when transferred to external evaluation tasks.</p>
-
-<p><img src="/kxk302/images/Figure_3.png" alt="Figure 3" /></p>
-
-<h3 id="ablation-studies-">Ablation Studies <a name="ablation"></a></h3>
-
-<p>This section examines the impact of the QR decomposition, caching mechanism, and rank selection.</p>
-
-<h4 id="impact-of-qr-decomposition-">Impact of QR Decomposition <a name="qr_ablation"></a></h4>
-
-<p>The TSVD framework uses QR decomposition to maintain orthonormality, avoiding the computationally expensive SVD operation in Riemannian optimization. The respective computational costs are given by Equations 3 and 5. <strong>Figure 3</strong> plots the computational cost of SVD vs. QR decomposition for various ranks, showing that QR decomposition requires far fewer FLOPs.</p>
-
-<p><img src="/kxk302/images/Figure_2.png" alt="Figure 2" /></p>
-
-<h4 id="impact-of-caching-mechanism-">Impact of Caching Mechanism <a name="cache_ablation"></a></h4>
-
-<p>Gradient accumulation is a training technique that partitions an effective batch into smaller mini-batches, processing them sequentially while accumulating their gradients to execute a single parameter update once the full batch size is reached. The TSVD framework computes the QR decomposition during the initial mini-batch, caches the results, and reuses them across subsequent mini-batches, effectively amortizing orthonormalization costs. Consequently, an increased number of gradient accumulation steps leads to greater amortization of the QR decomposition overhead.</p>
-
-<p>Full-parameter and TSVD Llama models (60M and 130M) were pretrained across $G \in {1, 2, 4, 8, 16, 32}$ gradient accumulation steps. <strong>Figure 2</strong> shows that larger gradient accumulation steps and model sizes amplify TSVD’s training efficiency gains over full-parameter models. Note that at $G = 1$ (a single step), TSVD performs QR decomposition at every update without cache reuse, making it slower than the full-parameter model. However, as the number of gradient accumulation steps increases, the computational cost of QR decomposition is amortized across steps. The TSVD version thus outperforms the full-parameter version in wall-clock time, making it a more practical choice as the number of gradient accumulation steps increases.</p>
-
-<p><img src="/kxk302/images/Table_5.png" alt="Table 5" /></p>
-
-<h4 id="impact-of-compression-rank-selection-">Impact of Compression Rank Selection <a name="rank_ablation"></a></h4>
-
-<p>While a uniform rank selection enforces a fixed rank across all layers and weight matrices irrespective of their functional roles, the TSVD framework computes the compression rank of each individual weight matrix based on its spectral energy, naturally accommodating variable rank selection across the architecture. To evaluate the impact of compression rank selections, four model scales were pretrained: Llama-60M, 130M, 350M, and 1.3B. At each scale, a TSVD model utilizing compression ranks (via spectral energy analysis) was compared against a uniform-rank baseline with fixed rank selections of 136, 240, 240, and 552, respectively. These uniform ranks were selected to match the total parameter count of the corresponding compression-rank models at each scale.</p>
-
-<p>The experimental results are presented in <strong>Table 5</strong>. The compression-rank TSVD models consistently outperform their uniform-rank counterparts, with the exception of the 60M scale. Furthermore, the performance advantages of compression rank selection widen as model scale increases. The results show that compression rank selection outperforms uniform rank selection.</p>
-
-<h2 id="discussion-and-future-work-">Discussion and Future Work <a name="future"></a></h2>
-
-<p>The TSVD experiments in this paper focused on dense models for two reasons: (1) to provide a fair comparison to prior low-rank pretraining methods, which were evaluated exclusively on dense architectures; and (2) to make sure that the approach scales to larger models. Having achieved these goals, a compelling next step is to extend it to Mixture-of-Experts (MoE) architectures, as the vast majority of state-of-the-art models rely on MoE architectures. Several other promising directions remain for future work. First, fine-tuning pretrained TSVD models on smaller, task-specific datasets is a natural next step. Second, investigating regularization strategies for $\Sigma$, to control the spectral norm of weight matrices and improve generalization. Third, exploring whether orthonormal matrices learned in smaller models can initialize corresponding matrices in larger models, while increasing the training efficiency.</p>
-
-<h2 id="conclusion-">Conclusion <a name="conclusion"></a></h2>
-
-<p>This paper introduces TSVD, a novel framework designed to reduce the parameter count and computational overhead of LLM pretraining. To our knowledge, TSVD is the first approach to maintain strict weight orthonormality throughout training without incurring prohibitive overhead, enabled by QR decomposition, an optimized caching mechanism, and a rank selection heuristic. Empirical evaluations show that TSVD models match or outperform their full-parameter counterparts across pretraining metrics and evaluation benchmarks. TSVD reduces the FLOPs required for LLM pretraining, lowering wall-clock time and GPU cost. It also reduces memory requirements, enabling larger models on existing hardware or the use of lower-tier GPUs, further reducing pretraining costs. The TSVD framework provides a foundation for more efficient pretraining of LLMs.</p>
-
-<h2 id="correspondence-">Correspondence <a name="correspondence"></a></h2>
-
-<p>This blog post was written by Kaivan Kamali: kaivan.kamali@cognizant.com</p>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post explains Google ADK, an open-source, code-first framework designed to build, debug, evaluate, and deploy AI agents and multi-agent systems. ADK supports five programming languages: Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python version of ADK.]]></summary></entry></feed>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">google.adk.sessions</span> <span class="kn">import</span> <span class="n">InMemorySessionService</span>
+<span class="kn">from</span> <span class="n">google.adk.runners</span> <span class="kn">import</span> <span class="n">Runner</span>
+<span class="kn">from</span> <span class="n">google.genai</span> <span class="kn">import</span> <span class="n">types</span> <span class="c1"># For creating message Content/Parts
+</span></code></pre></div></div>
+
+<p>The <code class="language-plaintext highlighter-rouge">InMemorySessionService</code> is a simple implementation of <code class="language-plaintext highlighter-rouge">SessionService</code> that stores everything in
+memory, suitable for testing and simple applications.</p>
+
+<ul>
+  <li><strong>Instantiate a <code class="language-plaintext highlighter-rouge">SessionService</code> object</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">session_service</span> <span class="o">=</span> <span class="nc">InMemorySessionService</span><span class="p">()</span>
+
+<span class="c1"># Define constants for identifying the interaction context
+</span><span class="n">APP_NAME</span> <span class="o">=</span> <span class="sh">"</span><span class="s">current_time_app</span><span class="sh">"</span>
+<span class="n">USER_ID</span> <span class="o">=</span> <span class="sh">"</span><span class="s">user_001</span><span class="sh">"</span>
+<span class="n">SESSION_ID</span> <span class="o">=</span> <span class="sh">"</span><span class="s">session_001</span><span class="sh">"</span> <span class="c1"># Using a fixed ID for simplicity
+</span>
+<span class="k">async</span> <span class="k">def</span> <span class="nf">init_session</span><span class="p">(</span><span class="n">app_name</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">user_id</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">session_id</span><span class="p">:</span><span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Session</span><span class="p">:</span>
+    <span class="n">session</span> <span class="o">=</span> <span class="k">await</span> <span class="n">session_service</span><span class="p">.</span><span class="nf">create_session</span><span class="p">(</span>
+        <span class="n">app_name</span><span class="o">=</span><span class="n">app_name</span><span class="p">,</span>
+        <span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">session</span>
+
+<span class="n">session</span> <span class="o">=</span> <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="nf">init_session</span><span class="p">(</span><span class="n">APP_NAME</span><span class="p">,</span> <span class="n">USER_ID</span><span class="p">,</span> <span class="n">SESSION_ID</span><span class="p">))</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Instantiate a <code class="language-plaintext highlighter-rouge">Runner</code> object</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">runner</span> <span class="o">=</span> <span class="nc">Runner</span><span class="p">(</span>
+    <span class="n">agent</span><span class="o">=</span><span class="n">current_time_agent</span><span class="p">,</span> <span class="c1"># The agent we want to run
+</span>    <span class="n">app_name</span><span class="o">=</span><span class="n">APP_NAME</span><span class="p">,</span>   <span class="c1"># Associates runs with our app
+</span>    <span class="n">session_service</span><span class="o">=</span><span class="n">session_service</span> <span class="c1"># Uses our session manager
+</span><span class="p">)</span>
+<span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Runner created for agent </span><span class="sh">'</span><span class="si">{</span><span class="n">runner</span><span class="p">.</span><span class="n">agent</span><span class="p">.</span><span class="n">name</span><span class="si">}</span><span class="sh">'</span><span class="s">.</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Interact with the agent</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="k">def</span> <span class="nf">call_agent_async</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">):</span>
+  <span class="sh">"""</span><span class="s">Sends a query to the agent and prints the final response.</span><span class="sh">"""</span>
+
+  <span class="c1"># Prepare the user's message in ADK format
+</span>  <span class="n">content</span> <span class="o">=</span> <span class="n">types</span><span class="p">.</span><span class="nc">Content</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="sh">'</span><span class="s">user</span><span class="sh">'</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="p">[</span><span class="n">types</span><span class="p">.</span><span class="nc">Part</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">query</span><span class="p">)])</span>
+  <span class="n">final_response_text</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Agent did not produce a final response.</span><span class="sh">"</span> <span class="c1"># Default
+</span>
+  <span class="c1"># Key Concept: run_async executes the agent logic and yields Events.
+</span>  <span class="c1"># We iterate through events to find the final answer.
+</span>  <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">runner</span><span class="p">.</span><span class="nf">run_async</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">new_message</span><span class="o">=</span><span class="n">content</span><span class="p">):</span>
+      <span class="c1"># is_final_response() marks the concluding message for the turn.
+</span>      <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="nf">is_final_response</span><span class="p">():</span>
+          <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span> <span class="ow">and</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">parts</span><span class="p">:</span>
+             <span class="c1"># Assuming text response in the first part
+</span>             <span class="n">final_response_text</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">text</span>
+          <span class="k">elif</span> <span class="n">event</span><span class="p">.</span><span class="n">actions</span> <span class="ow">and</span> <span class="n">event</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">escalate</span><span class="p">:</span> <span class="c1"># Handle potential errors/escalations
+</span>             <span class="n">final_response_text</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="s">Agent escalated: </span><span class="si">{</span><span class="n">event</span><span class="p">.</span><span class="n">error_message</span> <span class="ow">or</span> <span class="sh">'</span><span class="s">No specific message.</span><span class="sh">'</span><span class="si">}</span><span class="sh">"</span>
+          <span class="k">break</span> <span class="c1"># Stop processing events once the final response is found
+</span>
+<span class="c1"># We need an async function to await our interaction helper
+</span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_conversation</span><span class="p">():</span>
+    <span class="k">await</span> <span class="nf">call_agent_async</span><span class="p">(</span><span class="sh">"</span><span class="s">What is the time in London?</span><span class="sh">"</span><span class="p">,</span> <span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="n">USER_ID</span><span class="p">,</span><span class="n">session_id</span><span class="o">=</span><span class="n">SESSION_ID</span><span class="p">)</span>
+
+<span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="nf">run_conversation</span><span class="p">())</span>
+    <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="building-an-agent-team-">Building an Agent Team <a name="multi_agent"></a></h2>]]></content><author><name></name></author><summary type="html"><![CDATA[This blog post explains Google ADK, an open-source, code-first framework designed to build, debug, evaluate, and deploy AI agents and multi-agent systems. ADK supports five programming languages: Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python version of ADK.]]></summary></entry></feed>
