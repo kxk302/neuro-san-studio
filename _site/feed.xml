@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-30T17:34:40-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-30T17:50:09-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
 evaluate, and deploy AI agents and multi-agent systems. ADK supports five programming languages:
 Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python version of ADK.</p>
 
@@ -489,6 +489,84 @@ Agents CLI consists of the following 7 <strong>skill files</strong>:</p>
 </ul>
 
 <h3 id="workflows-">Workflows <a name="workflows"></a></h3>
+
+<p>Graph-based agent workflows structure execution using specific compositional patterns. Workflows
+provide the following advantage:</p>
+
+<ul>
+  <li>Define precise logic: Explicitly map out routing logic to manage transitions between different nodes.</li>
+  <li>Implement complex structures: Build agent workflows that support branching and state management.</li>
+  <li>Run chains of functions without AI: Call agent tools and your own code without invoking a generative AI model.</li>
+  <li>Enhance reliability: Improve the predictability of your agents by relying on structured node definitions rather than prompts alone.</li>
+</ul>
+
+<p>The code below displays how to create a workflow where different agents and tools are called in a sequence.
+Please read the inline comments for further explanantion.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># For building AI agents
+</span><span class="kn">from</span> <span class="n">google.adk</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="c1"># For chaining agents into a pipeline
+</span><span class="kn">from</span> <span class="n">google.adk</span> <span class="kn">import</span> <span class="n">Workflow</span>
+<span class="c1"># For managing messages
+</span><span class="kn">from</span> <span class="n">google.adk</span> <span class="kn">import</span> <span class="n">Event</span>
+<span class="c1"># Pydantic's base class, used to define structured data schemas and validate data types in Python
+</span><span class="kn">from</span> <span class="n">pydantic</span> <span class="kn">import</span> <span class="n">BaseModel</span>
+
+<span class="c1"># This agent generates a city name
+</span><span class="n">city_generator_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">city_generator_agent</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">gemini-flash-latest</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"""</span><span class="s">Return the name of a random city.
+      Return only the name, nothing else.</span><span class="sh">"""</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Defines a structured data model using Pydantic
+# Any data conforming to this schema must contain two string fields: time_info and city
+</span><span class="k">class</span> <span class="nc">CityTime</span><span class="p">(</span><span class="n">BaseModel</span><span class="p">):</span>
+    <span class="n">time_info</span><span class="p">:</span> <span class="nb">str</span>  <span class="c1"># time information
+</span>    <span class="n">city</span><span class="p">:</span> <span class="nb">str</span>       <span class="c1"># city name
+</span>
+
+<span class="c1"># Time Lookup Helper Function
+</span><span class="k">def</span> <span class="nf">lookup_time_function</span><span class="p">(</span><span class="n">node_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="sh">"""</span><span class="s">Simulate returning the current time in the specified city.</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="nc">CityTime</span><span class="p">(</span><span class="n">time_info</span><span class="o">=</span><span class="sh">"</span><span class="s">10:10 AM</span><span class="sh">"</span><span class="p">,</span> <span class="n">city</span><span class="o">=</span><span class="n">node_input</span><span class="p">)</span>
+
+
+<span class="c1"># AI agent responsible for generating the final report string
+</span><span class="n">city_report_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">city_report_agent</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">gemini-flash-latest</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">input_schema</span><span class="o">=</span><span class="n">CityTime</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"""</span><span class="s">Output following line:
+    It is {CityTime.time_info} in {CityTime.city} right now.</span><span class="sh">"""</span><span class="p">,</span>
+<span class="p">)</span>
+
+
+<span class="c1"># Helper function that receives the text output from the city_report_agent
+# Wraps the text inside an Event object and appends "\n WORKFLOW COMPLETED."
+# to signify that the pipeline has successfully finished execution
+</span><span class="k">def</span> <span class="nf">completed_message_function</span><span class="p">(</span><span class="n">node_input</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">return</span> <span class="nc">Event</span><span class="p">(</span>
+        <span class="n">message</span><span class="o">=</span><span class="sa">f</span><span class="sh">"</span><span class="si">{</span><span class="n">node_input</span><span class="si">}</span><span class="se">\n</span><span class="s"> WORKFLOW COMPLETED.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="c1"># edges: Defines the execution pipeline sequence
+# 1. "START": Triggers the workflow
+# 2. city_generator_agent: Generates a random city name
+# 3. lookup_time_function: Takes that city name and creates a CityTime object with a simulated time
+# 4. city_report_agent: Takes the structured object and formats it into a report sentence
+# 5. completed_message_function: Wraps the final report in an Event object with a completion banner.
+</span><span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Workflow</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">root_agent</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">edges</span><span class="o">=</span><span class="p">[</span>
+        <span class="p">(</span><span class="sh">"</span><span class="s">START</span><span class="sh">"</span><span class="p">,</span> <span class="n">city_generator_agent</span><span class="p">,</span> <span class="n">lookup_time_function</span><span class="p">,</span>
+         <span class="n">city_report_agent</span><span class="p">,</span> <span class="n">completed_message_function</span><span class="p">)</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
 
 <h2 id="references-">References <a name="references"></a></h2>
 
