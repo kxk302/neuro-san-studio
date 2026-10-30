@@ -74,6 +74,17 @@ Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python versi
   <li><a href="#multi_tool">Building a Multi-tool Agent</a></li>
   <li><a href="#runner_session">Manual Runner/Session Setup</a></li>
   <li><a href="#multi_agent">Building an Agent Team</a></li>
+  <li><a href="#mcp">MCP Tools</a></li>
+  <li><a href="#miscellaneous">Miscellaneous</a>
+    <ol>
+      <li><a href="#litellm">Multi-Model with LiteLLM</a></li>
+      <li><a href="#memory">Memory</a></li>
+      <li><a href="#callbacks">Callbacks</a></li>
+      <li><a href="#cli">Agent CLI</a></li>
+      <li><a href="#workflows">Workflows</a></li>
+    </ol>
+  </li>
+  <li><a href="#references">References</a></li>
 </ol>
 
 <h2 id="python-quickstart-">Python Quickstart <a name="quick_start"></a></h2>
@@ -326,7 +337,171 @@ memory, suitable for testing and simple applications.</p>
 tools to look up time and weather. Building an agent network with multiple agents
 offers several advantages, such as modularity, specilization, and efficiency.</p>
 
-<p>In this section, we build an agent network with three agents.</p>
+<p>In this section, we build an agent network with three agents. On top of the
+<code class="language-plaintext highlighter-rouge">current_weather_agent</code>, we add two more agents: <code class="language-plaintext highlighter-rouge">greeting_agent</code> and <code class="language-plaintext highlighter-rouge">farewell_agent</code>.</p>
+
+<ul>
+  <li><strong>Create simple Python functions that serve as tools for new agents</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">def</span> <span class="nf">say_hello</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">Provides a simple greeting message</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="s">Hello, </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s">!</span><span class="sh">"</span>
+
+<span class="k">def</span> <span class="nf">say_goodbye</span><span class="p">(</span><span class="n">name</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">str</span><span class="p">:</span>
+    <span class="sh">"""</span><span class="s">Provides a simple farewell message.</span><span class="sh">"""</span>
+    <span class="k">return</span> <span class="sa">f</span><span class="sh">"</span><span class="s">Goodbye </span><span class="si">{</span><span class="n">name</span><span class="si">}</span><span class="s">! Have a great day.</span><span class="sh">"</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Create <code class="language-plaintext highlighter-rouge">Agent</code> instances for new agents</strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">greeting_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="c1"># Using a potentially different/cheaper model for a simple task
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="sh">"</span><span class="s">gemini-flash-latest</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">greeting_agent</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"</span><span class="s">You are the Greeting Agent. Your ONLY task is to provide a friendly greeting to the user. </span><span class="sh">"</span>
+                <span class="sh">"</span><span class="s">Use the </span><span class="sh">'</span><span class="s">say_hello</span><span class="sh">'</span><span class="s"> tool to generate the greeting. </span><span class="sh">"</span>
+                <span class="sh">"</span><span class="s">Make sure to pass the name the user provides to the tool. </span><span class="sh">"</span>
+                <span class="sh">"</span><span class="s">Do not engage in any other conversation or tasks.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="sh">"</span><span class="s">Handles simple greetings and hellos using the </span><span class="sh">'</span><span class="s">say_hello</span><span class="sh">'</span><span class="s"> tool.</span><span class="sh">"</span><span class="p">,</span> <span class="c1"># Crucial for delegation
+</span>    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">say_hello</span><span class="p">],</span>
+<span class="p">)</span>
+
+<span class="n">farewell_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="c1"># Can use the same or a different model
+</span>    <span class="n">model</span> <span class="o">=</span> <span class="sh">"</span><span class="s">gemini-flash-latest</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">farewell_agent</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"</span><span class="s">You are the Farewell Agent. Your ONLY task is to provide a polite goodbye message. </span><span class="sh">"</span>
+                <span class="sh">"</span><span class="s">Use the </span><span class="sh">'</span><span class="s">say_goodbye</span><span class="sh">'</span><span class="s"> tool to generate the farewell. </span><span class="sh">"</span>
+                <span class="sh">"</span><span class="s">Make sure to pass the name the user provides to the tool. </span><span class="sh">"</span>
+                <span class="sh">"</span><span class="s">Do not engage in any other conversation or tasks.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="sh">"</span><span class="s">Handles simple farewells and goodbyes using the </span><span class="sh">'</span><span class="s">say_goodbye</span><span class="sh">'</span><span class="s"> tool.</span><span class="sh">"</span><span class="p">,</span> <span class="c1"># Crucial for delegation
+</span>    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">say_goodbye</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li>** Define the root agent with new sub-agents **</li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">'</span><span class="s">gemini-flash-latest</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">'</span><span class="s">current_time_agent</span><span class="sh">'</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="sh">"</span><span class="s">Tells the current time in a specified city and delegates greetings/farewells to specialists.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"""</span><span class="s">You are the main Current Time Agent coordinating a team.
+    Your primary responsibility is to provide the current time.
+    Use the </span><span class="sh">'</span><span class="s">get_current_time</span><span class="sh">'</span><span class="s"> tool ONLY for specific current time requests (e.g., </span><span class="sh">'</span><span class="s">current time in London</span><span class="sh">'</span><span class="s">).
+    You have specialized sub-agents:
+    1. </span><span class="sh">'</span><span class="s">greeting_agent</span><span class="sh">'</span><span class="s">: Handles simple greetings. Delegate to it for these.
+    2. </span><span class="sh">'</span><span class="s">farewell_agent</span><span class="sh">'</span><span class="s">: Handles simple farewells. Delegate to it for these.
+    Analyze the user</span><span class="sh">'</span><span class="s">s query. If it</span><span class="sh">'</span><span class="s">s a greeting, delegate to </span><span class="sh">'</span><span class="s">greeting_agent</span><span class="sh">'</span><span class="s">
+    If it</span><span class="sh">'</span><span class="s">s a farewell, delegate to </span><span class="sh">'</span><span class="s">farewell_agent</span><span class="sh">'</span><span class="s">
+    If it</span><span class="sh">'</span><span class="s">s a current time request, handle it yourself using </span><span class="sh">'</span><span class="s">get_current_time</span><span class="sh">'</span><span class="s">
+    For anything else, respond appropriately or state you cannot handle it</span><span class="sh">"""</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">get_current_time</span><span class="p">],</span>
+    <span class="c1"># Key change: Link the sub-agents here!
+</span>    <span class="n">sub_agents</span><span class="o">=</span><span class="p">[</span><span class="n">greeting_agent</span><span class="p">,</span> <span class="n">farewell_agent</span><span class="p">]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="mcp-tools-">MCP Tools <a name="mcp"></a></h2>
+
+<p>The Model Context Protocol (MCP) is an open standard for connecting generative AI models to
+external data sources, tools, and systems. Below we provide an example of an ADK agent acting
+as ann MCP client using <code class="language-plaintext highlighter-rouge">McpToolset</code> – You can also build an MCP server that wraps ADK tools
+using <code class="language-plaintext highlighter-rouge">to_mcp_server</code>, but that is not covered here.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Allows you to interact with the underlying OS using Python
+</span><span class="kn">import</span> <span class="n">os</span>
+<span class="c1"># Core class in Google ADK to create LLM-powered agents
+</span><span class="kn">from</span> <span class="n">google.adk.agents</span> <span class="kn">import</span> <span class="n">LlmAgent</span>
+
+<span class="c1"># Primary ADK integration class for MCP
+</span><span class="kn">from</span> <span class="n">google.adk.tools.mcp_tool</span> <span class="kn">import</span> <span class="n">McpToolset</span>
+
+<span class="c1"># Imports the connection configuration wrapper specific to the ADK
+</span><span class="kn">from</span> <span class="n">google.adk.tools.mcp_tool.mcp_session_manager</span> <span class="kn">import</span> <span class="n">StdioConnectionParams</span>
+<span class="c1"># Imports the core configuration class from Anthropic's official mcp Python library
+</span><span class="kn">from</span> <span class="n">mcp</span> <span class="kn">import</span> <span class="n">StdioServerParameters</span>
+
+<span class="n">TARGET_FOLDER</span> <span class="o">=</span> <span class="n">os</span><span class="p">.</span><span class="n">path</span><span class="p">.</span><span class="nf">abspath</span><span class="p">(</span><span class="sh">"</span><span class="s">/Users/LarryBird</span><span class="sh">"</span><span class="p">)</span>
+
+<span class="n">root_agent</span> <span class="o">=</span> <span class="nc">LlmAgent</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">gemini-flash-latest</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">filesystem_assistant</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"</span><span class="s">Help users manage local files.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span>
+        <span class="nc">McpToolset</span><span class="p">(</span>
+            <span class="c1"># StdioConnectionParams: wrapper for Google ADK. It takes the low-level StdioServerParameters
+</span>            <span class="c1"># and tells the ADK how to manage the connection session
+</span>            <span class="c1"># StdioServerParameters: defines how to launch the server process at the operating system level
+</span>            <span class="n">connection_params</span><span class="o">=</span><span class="nc">StdioConnectionParams</span><span class="p">(</span>
+                <span class="c1"># npx stands for "Node Package Executive." It is a tool that comes bundled with Node.js
+</span>                <span class="c1"># It allows you to download and run Node.js packages directly from the npm registry
+</span>                <span class="c1"># without needing to manually install them globally on your machine
+</span>                <span class="c1"># 1st arg: Automatically answers "yes" if npx prompts you to confirm downloading a package
+</span>                <span class="c1"># 2nd arg: Name of the official Model Context Protocol server package hosted on npm
+</span>                <span class="c1"># It is a pre-built server created by Anthropic that implements standard file-system
+</span>                <span class="c1"># operations (like reading, writing, and listing directories) safely over the MCP protocol
+</span>                <span class="n">server_params</span><span class="o">=</span><span class="nc">StdioServerParameters</span><span class="p">(</span>
+                    <span class="n">command</span><span class="o">=</span><span class="sh">"</span><span class="s">npx</span><span class="sh">"</span><span class="p">,</span>
+                    <span class="n">args</span><span class="o">=</span><span class="p">[</span><span class="sh">"</span><span class="s">-y</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">@modelcontextprotocol/server-filesystem</span><span class="sh">"</span><span class="p">,</span> <span class="n">TARGET_FOLDER</span><span class="p">],</span>
+                <span class="p">),</span>
+            <span class="p">),</span>
+            <span class="c1"># Optional: Select specific tools exposed to the agent
+</span>            <span class="c1"># Acts as a security or behavioral constraint. Even though the MCP
+</span>            <span class="c1"># filesystem server might expose tools to write, delete, or move files,
+</span>            <span class="c1"># this filter restricts the agent to only list_directory and read_file.
+</span>            <span class="c1"># The agent can view files and folders, but it cannot edit or delete them
+</span>            <span class="n">tool_filter</span><span class="o">=</span><span class="p">[</span><span class="sh">"</span><span class="s">list_directory</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">read_file</span><span class="sh">"</span><span class="p">],</span>
+        <span class="p">)</span>
+    <span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h2 id="miscellaneous-">Miscellaneous <a name="miscellaneous"></a></h2>
+
+<h3 id="multi-model-with-litellm-a-namelitellm">Multi-Model with LiteLLM &lt;a name=”litellm)</h3>
+
+<p>Google’s ADK is natively optimized for Gemini, but it achieves full model-agnosticism
+through a dedicated integration layer built on top of <a href="https://github.com/BerriAI/litellm">LiteLLM</a>.</p>
+
+<p>Instead of passing only a model name string, we wrap the desired model identifier string within the
+LiteLlm class. LiteLLM class also offers a failover mechanism via <code class="language-plaintext highlighter-rouge">fallbacks</code> parameter.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">google.adk.agents.llm_agent</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span> <span class="n">google.adk.models.lite_llm</span> <span class="kn">import</span> <span class="n">LiteLlm</span>
+
+<span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="n">model</span><span class="o">=</span><span class="nc">LiteLlm</span><span class="p">(</span>
+        <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">openai/gpt-4o</span><span class="sh">"</span><span class="p">,</span>
+        <span class="n">num_retries</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
+        <span class="c1"># Backup chain executed in order
+</span>        <span class="n">fallbacks</span><span class="o">=</span><span class="p">[</span>
+            <span class="sh">"</span><span class="s">anthropic/claude-3-5-sonnet-20241022</span><span class="sh">"</span><span class="p">,</span>
+            <span class="sh">"</span><span class="s">ollama/llama3.3</span><span class="sh">"</span>
+        <span class="p">]</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">my_agent</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="sh">"</span><span class="s">You are a helpful assistant.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[]</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<h3 id="memory-">Memory <a name="memory"></a></h3>
+
+<h3 id="callbacks-">Callbacks <a name="callbacks"></a></h3>
+
+<h3 id="agent-cli-">Agent CLI <a name="cli"></a></h3>
+
+<h3 id="workflows-">Workflows <a name="workflows"></a></h3>
+
+<h2 id="references-">References <a name="references"></a></h2>
+
+<ul>
+  <li><a href="https://adk.dev/">Google ADK</a></li>
+</ul>
 
   </div><a class="u-url" href="/kxk302/2026/10/28/adk.html" hidden></a>
 </article>
