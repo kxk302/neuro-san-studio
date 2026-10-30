@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-30T16:12:27-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-10-30T17:34:40-04:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
 evaluate, and deploy AI agents and multi-agent systems. ADK supports five programming languages:
 Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python version of ADK.</p>
 
@@ -397,7 +397,7 @@ using <code class="language-plaintext highlighter-rouge">to_mcp_server</code>, b
 
 <h2 id="miscellaneous-">Miscellaneous <a name="miscellaneous"></a></h2>
 
-<h3 id="multi-model-with-litellm-a-namelitellm">Multi-Model with LiteLLM &lt;a name=”litellm)</h3>
+<h3 id="multi-model-with-litellm-">Multi-Model with LiteLLM <a name="litellm"></a></h3>
 
 <p>Google’s ADK is natively optimized for Gemini, but it achieves full model-agnosticism
 through a dedicated integration layer built on top of <a href="https://github.com/BerriAI/litellm">LiteLLM</a>.</p>
@@ -425,9 +425,68 @@ LiteLlm class. LiteLLM class also offers a failover mechanism via <code class="l
 
 <h3 id="memory-">Memory <a name="memory"></a></h3>
 
+<p>Agent’s memory in ADK is provided through <em>session state</em>. Session state is a Python
+dictionary (<code class="language-plaintext highlighter-rouge">session.state</code>) tied to a specific user session (identified by app name,
+user ID, and session ID). It persists information across multiple conversational turns
+within that session. Agents and Tools can read from and write to this state, allowing
+them to remember details, adapt behavior, and personalize responses.</p>
+
+<p>Agents interact with Session State in two ways:</p>
+
+<ul>
+  <li>
+    <p><strong>ToolContext</strong> (Primary Method): Tools can accept a <code class="language-plaintext highlighter-rouge">ToolContext</code> object (automatically
+provided by ADK for any parameter annotated ToolContext). This object gives direct access
+to the session state via <code class="language-plaintext highlighter-rouge">tool_context.state</code>, allowing tools to read preferences or save
+results during execution.</p>
+  </li>
+  <li>
+    <p><strong>output_key</strong> (Auto-Save Agent Response): An Agent can be configured with an
+<code class="language-plaintext highlighter-rouge">output_key="your_key"</code>. ADK will then automatically save the agent’s final textual
+response for a turn into <code class="language-plaintext highlighter-rouge">session.state["your_key"]</code>.</p>
+  </li>
+</ul>
+
 <h3 id="callbacks-">Callbacks <a name="callbacks"></a></h3>
 
+<p>Callbacks let you intercept and customize execution at three levels: agent, model, and tool.</p>
+
+<ul>
+  <li><strong>Agent callbacks</strong>
+    <ul>
+      <li>Execute before or after an agent runs</li>
+      <li>Examples: Check user permissions, or block unauthorized requests</li>
+    </ul>
+  </li>
+  <li><strong>Model callbacks</strong>
+    <ul>
+      <li>Execute before or after an LLM call</li>
+      <li>Examples: Modify prompts, filter PII, or validate LLM outputs.</li>
+    </ul>
+  </li>
+  <li><strong>Tool callbakcs</strong>
+    <ul>
+      <li>Execute before or after a tool is called</li>
+      <li>Examples: Validate tool arguments, enforce API permissions, or return cached results</li>
+    </ul>
+  </li>
+</ul>
+
 <h3 id="agent-cli-">Agent CLI <a name="cli"></a></h3>
+
+<p>The <strong>Agents CLI</strong> tool set lets you plug ADK agent expertise into your favorite AI-coding
+environments (e.g., Claude Code) to scaffold, build, test, evaluate, and deploy ADK agents.
+Agents CLI consists of the following 7 <strong>skill files</strong>:</p>
+
+<ul>
+  <li>workflow:	Manages the end-to-end development</li>
+  <li>adk-code:	Teaches your coding agent how to write clean ADK code using Python</li>
+  <li>scaffold:	Handles initial project generation</li>
+  <li>eval:	Defines the quality assurance framework, and testing specifications for non-deterministic AI agents</li>
+  <li>deploy: Manages infrastructure provisioning and cloud deployment options</li>
+  <li>publish: Handles agent identity, registration, and discovery within enterprise ecosystems</li>
+  <li>observability: Equips the agent with production-grade monitoring, and logging</li>
+</ul>
 
 <h3 id="workflows-">Workflows <a name="workflows"></a></h3>
 
