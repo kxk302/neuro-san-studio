@@ -8,5 +8,5 @@ title: Home
 This site is successfully running from the gh-pages branch using Markdown.
 
 ## Recent Posts
-* [Google ADK]({% post_url 2026-10-28-adk %})
+* [Google ADK]({{ site.baseurl }}{% post_url 2026-10-28-adk %})
 
