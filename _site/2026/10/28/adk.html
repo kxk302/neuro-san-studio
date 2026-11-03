@@ -75,6 +75,7 @@ on Python version of ADK.</p>
   <li><a href="#multi_tool">Building a Multi-tool Agent</a></li>
   <li><a href="#runner_session">Manual Runner/Session Setup</a></li>
   <li><a href="#multi_agent">Building an Agent Team</a></li>
+  <li><a href="#tools">ADK Tools</a></li>
   <li><a href="#mcp">MCP Tools</a></li>
   <li><a href="#miscellaneous">Miscellaneous</a>
     <ol>
@@ -485,6 +486,49 @@ offers several advantages, such as modularity, specilization, and efficiency.</p
 </ul>
 
 <p>The source code of the multi-agent agent network can be downloaded from <a href="/kxk302/src/multi_agent/agent.py">here</a>.</p>
+
+<h2 id="adk-tools-">ADK Tools <a name="tools"></a></h2>
+
+<p><code class="language-plaintext highlighter-rouge">google.adk.tools</code> is a Python package in ADK that provides tools an AI agent can use to perform actions beyond
+generating text. The package contains the following tools:</p>
+
+<ul>
+  <li><strong>FunctionTool</strong>:	Wrap a Python function as a tool</li>
+  <li><strong>AgentTool</strong>; Expose another agent as a callable tool</li>
+  <li><strong>McpToolset</strong>: Integrate tools from MCP servers</li>
+  <li><strong>OpenAPIToolset</strong>: Generate tools from OpenAPI specifications</li>
+  <li><strong>BaseTool</strong>:	Base class for implementing custom tools</li>
+  <li><strong>google_search</strong>: Search the web using Google’s built-in search</li>
+</ul>
+
+<p>ADK also provides a <code class="language-plaintext highlighter-rouge">LangchainTool</code> adapter in (<code class="language-plaintext highlighter-rouge">google.adk.integrations.langchain.LangchainTool</code>), which allows
+you to wrap existing LangChain tools and reuse their functionaluty without rewriting their functionality.</p>
+
+<p>Below is an example of an agent calling Google search tool.</p>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">google.adk.agents</span> <span class="kn">import</span> <span class="n">Agent</span>
+<span class="kn">from</span> <span class="n">google.adk.tools</span> <span class="kn">import</span> <span class="n">google_search</span>
+
+
+<span class="c1"># Define the single search-enabled agent
+</span><span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">search_assistant</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">gemini-flash-latest</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">description</span><span class="o">=</span><span class="sh">"</span><span class="s">A helpful assistant that can search the live web using Google Search.</span><span class="sh">"</span><span class="p">,</span>
+    <span class="n">instruction</span><span class="o">=</span><span class="p">(</span>
+        <span class="sh">"</span><span class="s">You are a knowledgeable assistant with access to Google Search. </span><span class="sh">"</span>
+        <span class="sh">"</span><span class="s">When asked about current events, facts, or data requiring up-to-date information, </span><span class="sh">"</span>
+        <span class="sh">"</span><span class="s">use the Google Search tool to find accurate and grounded answers.</span><span class="sh">"</span>
+    <span class="p">),</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">google_search</span><span class="p">],</span>
+<span class="p">)</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Run your agent via command-line/web interface, or by sending requests to an API server</strong></li>
+</ul>
+
+<p>The source code of the search agent network can be downloaded from <a href="/kxk302/src/search_agent/agent.py">here</a>.</p>
 
 <h2 id="mcp-tools-">MCP Tools <a name="mcp"></a></h2>
 
