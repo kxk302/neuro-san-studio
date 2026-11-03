@@ -64,9 +64,10 @@
   </header>
 
   <div class="post-content e-content" itemprop="articleBody">
-    <p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework designed to build, debug, 
-evaluate, and deploy AI agents and multi-agent systems. ADK supports five programming languages:
-Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python version of ADK.</p>
+    <p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework
+designed to build, debug, evaluate, and deploy AI agents and multi-agent systems. ADK supports
+five programming languages: Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus
+on Python version of ADK.</p>
 
 <h1 id="table-of-contents">Table of Contents</h1>
 <ol>
@@ -110,12 +111,12 @@ Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus on Python versi
   <li><strong>Create a new project using <code class="language-plaintext highlighter-rouge">adk create</code> command</strong></li>
 </ul>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk create my_agent
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk create time_agent
 </code></pre></div></div>
 
-<p>This command creates the following files in my_agent folder:</p>
+<p>This command creates the following files in time_agent folder:</p>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>my_agent/
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>time_agent/
     agent.py      <span class="c"># main agent code</span>
     .env          <span class="c"># API keys or project IDs</span>
     __init__.py
@@ -157,14 +158,21 @@ file via:</p>
 </code></pre></div></div>
 
 <ul>
+  <li><strong>Import your agent in <code class="language-plaintext highlighter-rouge">__init__.py</code></strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">.agent</span> <span class="kn">import</span> <span class="n">root_agent</span>
+</code></pre></div></div>
+
+<ul>
   <li><strong>Run your agent via command-line interface</strong></li>
 </ul>
 
-<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk run my_agent
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk run time_agent
 </code></pre></div></div>
 <p>Image below shows a sample interaction with the agent.</p>
 
-<p><img src="/kxk302/images/my_agent_cli.png" alt="Agent interaction" /></p>
+<p><img src="/kxk302/images/time_agent_cli.png" alt="Agent interaction" /></p>
 
 <ul>
   <li><strong>Run your agent via web interface</strong></li>
@@ -177,7 +185,7 @@ left corner and type a request.</p>
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk web <span class="nt">--port</span> 8000
 </code></pre></div></div>
 
-<p><img src="/kxk302/images/my_agent_web.png" alt="Agent interaction" /></p>
+<p><img src="/kxk302/images/time_agent_web.png" alt="Agent interaction" /></p>
 
 <ul>
   <li><strong>Run your agent by sending requests to an API server</strong></li>
@@ -203,12 +211,12 @@ curl <span class="nt">-X</span> GET http://localhost:8000/version
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> GET http://localhost:8000/list-apps
 </code></pre></div></div>
 
-<p>To send a request to <code class="language-plaintext highlighter-rouge">my_agent</code> agent network:</p>
+<p>To send a request to <code class="language-plaintext highlighter-rouge">time_agent</code> agent network:</p>
 
 <div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>curl <span class="nt">-X</span> POST http://localhost:8000/run <span class="se">\</span>
   <span class="nt">-H</span> <span class="s2">"Content-Type: application/json"</span> <span class="se">\</span>
   <span class="nt">-d</span> <span class="s1">'{
-    "appName": "my_agent",
+    "appName": "time_agent",
     "userId": "u_123",
     "sessionId": "s_abc",
     "newMessage": {
@@ -218,9 +226,20 @@ curl <span class="nt">-X</span> GET http://localhost:8000/version
   }'</span>
 </code></pre></div></div>
 
+<p>The source code of the time agent network can be downloaded from <a href="/kxk302/src/time_agent/agent.py">here</a>.</p>
+
 <h2 id="building-a-multi-tool-agent-">Building a Multi-tool Agent <a name="multi_tool"></a></h2>
 
-<p>Simply, define another function in <code class="language-plaintext highlighter-rouge">agent.py</code>, e.g.:</p>
+<ul>
+  <li><strong>Create a new project using <code class="language-plaintext highlighter-rouge">adk create</code> command</strong></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk create multi_tool
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Add another function to <code class="language-plaintext highlighter-rouge">agent.py</code> from <code class="language-plaintext highlighter-rouge">time_agent</code></strong></li>
+</ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># Mock tool implementation
 </span><span class="k">def</span> <span class="nf">get_current_weather</span><span class="p">(</span><span class="n">city</span><span class="p">:</span> <span class="nb">str</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
@@ -228,7 +247,9 @@ curl <span class="nt">-X</span> GET http://localhost:8000/version
     <span class="k">return</span> <span class="p">{</span><span class="sh">"</span><span class="s">status</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">success</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">city</span><span class="sh">"</span><span class="p">:</span> <span class="n">city</span><span class="p">,</span> <span class="sh">"</span><span class="s">weather</span><span class="sh">"</span><span class="p">:</span> <span class="sh">"</span><span class="s">Sunny with a temperature of 77 degrees Fahrenheit</span><span class="sh">"</span><span class="p">}</span>
 </code></pre></div></div>
 
-<p>Add the new function name to <code class="language-plaintext highlighter-rouge">tools</code> list in <code class="language-plaintext highlighter-rouge">root_agent</code>, and update the description/instruction:</p>
+<ul>
+  <li><strong>Add the new function name to <code class="language-plaintext highlighter-rouge">tools</code> list in <code class="language-plaintext highlighter-rouge">root_agent</code>, and update the description/instruction</strong></li>
+</ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
     <span class="n">model</span><span class="o">=</span><span class="sh">'</span><span class="s">gemini-flash-latest</span><span class="sh">'</span><span class="p">,</span>
@@ -239,6 +260,19 @@ curl <span class="nt">-X</span> GET http://localhost:8000/version
     <span class="n">tools</span><span class="o">=</span><span class="p">[</span><span class="n">get_current_time</span><span class="p">,</span> <span class="n">get_current_weather</span><span class="p">],</span>
 <span class="p">)</span>
 </code></pre></div></div>
+
+<ul>
+  <li><strong>Import your agent in <code class="language-plaintext highlighter-rouge">__init__.py</code></strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">.agent</span> <span class="kn">import</span> <span class="n">root_agent</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Run your agent via command-line/web interface, or by sending requests to an API server</strong></li>
+</ul>
+
+<p>The source code of the multi-tool agent network can be downloaded from <a href="/kxk302/src/multi_tool/agent.py">here</a>.</p>
 
 <h2 id="manual-runnersession-setup-">Manual Runner/Session Setup <a name="runner_session"></a></h2>
 
@@ -255,9 +289,12 @@ a <code class="language-plaintext highlighter-rouge">SessionService</code> and a
   <li><strong>Import the necessary packages</strong></li>
 </ul>
 
-<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">google.adk.sessions</span> <span class="kn">import</span> <span class="n">InMemorySessionService</span>
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">import</span> <span class="n">asyncio</span>
+
+<span class="kn">from</span> <span class="n">google.adk.agents</span> <span class="kn">import</span> <span class="n">Agent</span>
 <span class="kn">from</span> <span class="n">google.adk.runners</span> <span class="kn">import</span> <span class="n">Runner</span>
-<span class="kn">from</span> <span class="n">google.genai</span> <span class="kn">import</span> <span class="n">types</span> <span class="c1"># For creating message Content/Parts
+<span class="kn">from</span> <span class="n">google.adk.sessions</span> <span class="kn">import</span> <span class="n">InMemorySessionService</span><span class="p">,</span> <span class="n">Session</span>
+<span class="kn">from</span> <span class="n">google.genai</span> <span class="kn">import</span> <span class="n">types</span>  <span class="c1"># For creating message Content/Parts
 </span></code></pre></div></div>
 
 <p>The <code class="language-plaintext highlighter-rouge">InMemorySessionService</code> is a simple implementation of <code class="language-plaintext highlighter-rouge">SessionService</code> that stores everything in
@@ -302,33 +339,56 @@ memory, suitable for testing and simple applications.</p>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="k">async</span> <span class="k">def</span> <span class="nf">call_agent_async</span><span class="p">(</span><span class="n">query</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">runner</span><span class="p">,</span> <span class="n">user_id</span><span class="p">,</span> <span class="n">session_id</span><span class="p">):</span>
-  <span class="sh">"""</span><span class="s">Sends a query to the agent and prints the final response.</span><span class="sh">"""</span>
+    <span class="sh">"""</span><span class="s">Sends a query to the agent and prints the final response.</span><span class="sh">"""</span>
 
-  <span class="c1"># Prepare the user's message in ADK format
-</span>  <span class="n">content</span> <span class="o">=</span> <span class="n">types</span><span class="p">.</span><span class="nc">Content</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="sh">'</span><span class="s">user</span><span class="sh">'</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="p">[</span><span class="n">types</span><span class="p">.</span><span class="nc">Part</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">query</span><span class="p">)])</span>
-  <span class="n">final_response_text</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Agent did not produce a final response.</span><span class="sh">"</span> <span class="c1"># Default
+    <span class="c1"># Prepare the user's message in ADK format
+</span>    <span class="n">content</span> <span class="o">=</span> <span class="n">types</span><span class="p">.</span><span class="nc">Content</span><span class="p">(</span><span class="n">role</span><span class="o">=</span><span class="sh">"</span><span class="s">user</span><span class="sh">"</span><span class="p">,</span> <span class="n">parts</span><span class="o">=</span><span class="p">[</span><span class="n">types</span><span class="p">.</span><span class="nc">Part</span><span class="p">(</span><span class="n">text</span><span class="o">=</span><span class="n">query</span><span class="p">)])</span>
+    <span class="n">final_response_text</span> <span class="o">=</span> <span class="sh">"</span><span class="s">Agent did not produce a final response.</span><span class="sh">"</span>  <span class="c1"># Default
 </span>
-  <span class="c1"># Key Concept: run_async executes the agent logic and yields Events.
-</span>  <span class="c1"># We iterate through events to find the final answer.
-</span>  <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">runner</span><span class="p">.</span><span class="nf">run_async</span><span class="p">(</span><span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">new_message</span><span class="o">=</span><span class="n">content</span><span class="p">):</span>
-      <span class="c1"># is_final_response() marks the concluding message for the turn.
-</span>      <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="nf">is_final_response</span><span class="p">():</span>
-          <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span> <span class="ow">and</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">parts</span><span class="p">:</span>
-             <span class="c1"># Assuming text response in the first part
-</span>             <span class="n">final_response_text</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">text</span>
-          <span class="k">elif</span> <span class="n">event</span><span class="p">.</span><span class="n">actions</span> <span class="ow">and</span> <span class="n">event</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">escalate</span><span class="p">:</span> <span class="c1"># Handle potential errors/escalations
-</span>             <span class="n">final_response_text</span> <span class="o">=</span> <span class="sa">f</span><span class="sh">"</span><span class="s">Agent escalated: </span><span class="si">{</span><span class="n">event</span><span class="p">.</span><span class="n">error_message</span> <span class="ow">or</span> <span class="sh">'</span><span class="s">No specific message.</span><span class="sh">'</span><span class="si">}</span><span class="sh">"</span>
-          <span class="k">break</span> <span class="c1"># Stop processing events once the final response is found
-</span>
+    <span class="c1"># Key Concept: run_async executes the agent logic and yields Events.
+</span>    <span class="c1"># We iterate through events to find the final answer.
+</span>    <span class="k">async</span> <span class="k">for</span> <span class="n">event</span> <span class="ow">in</span> <span class="n">runner</span><span class="p">.</span><span class="nf">run_async</span><span class="p">(</span>
+        <span class="n">user_id</span><span class="o">=</span><span class="n">user_id</span><span class="p">,</span> <span class="n">session_id</span><span class="o">=</span><span class="n">session_id</span><span class="p">,</span> <span class="n">new_message</span><span class="o">=</span><span class="n">content</span>
+    <span class="p">):</span>
+        <span class="c1"># is_final_response() marks the concluding message for the turn.
+</span>        <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="nf">is_final_response</span><span class="p">():</span>
+            <span class="k">if</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span> <span class="ow">and</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">parts</span><span class="p">:</span>
+                <span class="c1"># Assuming text response in the first part
+</span>                <span class="n">final_response_text</span> <span class="o">=</span> <span class="n">event</span><span class="p">.</span><span class="n">content</span><span class="p">.</span><span class="n">parts</span><span class="p">[</span><span class="mi">0</span><span class="p">].</span><span class="n">text</span>
+            <span class="nf">elif </span><span class="p">(</span>
+                <span class="n">event</span><span class="p">.</span><span class="n">actions</span> <span class="ow">and</span> <span class="n">event</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">escalate</span>
+            <span class="p">):</span>  <span class="c1"># Handle potential errors/escalations
+</span>                <span class="n">final_response_text</span> <span class="o">=</span> <span class="p">(</span>
+                    <span class="sa">f</span><span class="sh">"</span><span class="s">Agent escalated: </span><span class="si">{</span><span class="n">event</span><span class="p">.</span><span class="n">error_message</span> <span class="ow">or</span> <span class="sh">'</span><span class="s">No specific message.</span><span class="sh">'</span><span class="si">}</span><span class="sh">"</span>
+                <span class="p">)</span>
+
+    <span class="c1"># Return the value instead of just printing it
+</span>    <span class="k">return</span> <span class="n">final_response_text</span>
+
+
 <span class="c1"># We need an async function to await our interaction helper
 </span><span class="k">async</span> <span class="k">def</span> <span class="nf">run_conversation</span><span class="p">():</span>
-    <span class="k">await</span> <span class="nf">call_agent_async</span><span class="p">(</span><span class="sh">"</span><span class="s">What is the time in London?</span><span class="sh">"</span><span class="p">,</span> <span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">,</span> <span class="n">user_id</span><span class="o">=</span><span class="n">USER_ID</span><span class="p">,</span><span class="n">session_id</span><span class="o">=</span><span class="n">SESSION_ID</span><span class="p">)</span>
+    <span class="n">response</span> <span class="o">=</span> <span class="k">await</span> <span class="nf">call_agent_async</span><span class="p">(</span>
+        <span class="sh">"</span><span class="s">What is the time in London?</span><span class="sh">"</span><span class="p">,</span>
+        <span class="n">runner</span><span class="o">=</span><span class="n">runner</span><span class="p">,</span>
+        <span class="n">user_id</span><span class="o">=</span><span class="n">USER_ID</span><span class="p">,</span>
+        <span class="n">session_id</span><span class="o">=</span><span class="n">SESSION_ID</span><span class="p">,</span>
+    <span class="p">)</span>
+    <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">Agent Response: </span><span class="si">{</span><span class="n">response</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+
 
 <span class="k">if</span> <span class="n">__name__</span> <span class="o">==</span> <span class="sh">"</span><span class="s">__main__</span><span class="sh">"</span><span class="p">:</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">asyncio</span><span class="p">.</span><span class="nf">run</span><span class="p">(</span><span class="nf">run_conversation</span><span class="p">())</span>
+    <span class="k">except</span> <span class="n">asyncio</span><span class="p">.</span><span class="n">CancelledError</span><span class="p">:</span>
+        <span class="nf">print</span><span class="p">(</span><span class="sh">"</span><span class="s">The agent task was cancelled externally (timeout or abort).</span><span class="sh">"</span><span class="p">)</span>
     <span class="k">except</span> <span class="nb">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nf">print</span><span class="p">(</span><span class="sa">f</span><span class="sh">"</span><span class="s">An error occurred: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="sh">"</span><span class="p">)</span>
+</code></pre></div></div>
+
+<p>The source code of the manual session/runner agent network can be downloaded from <a href="/kxk302/src/runner_session/agent.py">here</a>. You can run it via the following command:</p>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>python3 <span class="nt">-m</span> runner_session.agent
 </code></pre></div></div>
 
 <h2 id="building-an-agent-team-">Building an Agent Team <a name="multi_agent"></a></h2>
@@ -339,6 +399,13 @@ offers several advantages, such as modularity, specilization, and efficiency.</p
 
 <p>In this section, we build an agent network with three agents. On top of the
 <code class="language-plaintext highlighter-rouge">current_weather_agent</code>, we add two more agents: <code class="language-plaintext highlighter-rouge">greeting_agent</code> and <code class="language-plaintext highlighter-rouge">farewell_agent</code>.</p>
+
+<ul>
+  <li><strong>Create a new project using <code class="language-plaintext highlighter-rouge">adk create</code> command</strong></li>
+</ul>
+
+<div class="language-bash highlighter-rouge"><div class="highlight"><pre class="highlight"><code>adk create multi_agent
+</code></pre></div></div>
 
 <ul>
   <li><strong>Create simple Python functions that serve as tools for new agents</strong></li>
@@ -383,7 +450,7 @@ offers several advantages, such as modularity, specilization, and efficiency.</p
 </code></pre></div></div>
 
 <ul>
-  <li>** Define the root agent with new sub-agents **</li>
+  <li><strong>Define the root agent with new sub-agents</strong></li>
 </ul>
 
 <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">root_agent</span> <span class="o">=</span> <span class="nc">Agent</span><span class="p">(</span>
@@ -405,6 +472,19 @@ offers several advantages, such as modularity, specilization, and efficiency.</p
 </span>    <span class="n">sub_agents</span><span class="o">=</span><span class="p">[</span><span class="n">greeting_agent</span><span class="p">,</span> <span class="n">farewell_agent</span><span class="p">]</span>
 <span class="p">)</span>
 </code></pre></div></div>
+
+<ul>
+  <li><strong>Import your agent in <code class="language-plaintext highlighter-rouge">__init__.py</code></strong></li>
+</ul>
+
+<div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="kn">from</span> <span class="n">.agent</span> <span class="kn">import</span> <span class="n">root_agent</span>
+</code></pre></div></div>
+
+<ul>
+  <li><strong>Run your agent via command-line/web interface, or by sending requests to an API server</strong></li>
+</ul>
+
+<p>The source code of the multi-agent agent network can be downloaded from <a href="/kxk302/src/multi_agent/agent.py">here</a>.</p>
 
 <h2 id="mcp-tools-">MCP Tools <a name="mcp"></a></h2>
 
@@ -461,6 +541,12 @@ using <code class="language-plaintext highlighter-rouge">to_mcp_server</code>, b
 <span class="p">)</span>
 </code></pre></div></div>
 
+<ul>
+  <li><strong>Run your agent via command-line/web interface, or by sending requests to an API server</strong></li>
+</ul>
+
+<p>The source code of the MCP agent network can be downloaded from <a href="/kxk302/src/mcp_agent/agent.py">here</a>.</p>
+
 <h2 id="miscellaneous-">Miscellaneous <a name="miscellaneous"></a></h2>
 
 <h3 id="multi-model-with-litellm-">Multi-Model with LiteLLM <a name="litellm"></a></h3>
@@ -479,15 +565,24 @@ LiteLlm class. LiteLLM class also offers a failover mechanism via <code class="l
         <span class="n">model</span><span class="o">=</span><span class="sh">"</span><span class="s">openai/gpt-4o</span><span class="sh">"</span><span class="p">,</span>
         <span class="n">num_retries</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span>
         <span class="c1"># Backup chain executed in order
-</span>        <span class="n">fallbacks</span><span class="o">=</span><span class="p">[</span>
-            <span class="sh">"</span><span class="s">anthropic/claude-3-5-sonnet-20241022</span><span class="sh">"</span><span class="p">,</span>
-            <span class="sh">"</span><span class="s">ollama/llama3.3</span><span class="sh">"</span>
-        <span class="p">]</span>
-    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">my_agent</span><span class="sh">"</span><span class="p">,</span>
+</span>        <span class="n">fallbacks</span><span class="o">=</span><span class="p">[</span><span class="sh">"</span><span class="s">anthropic/claude-3-5-sonnet-20241022</span><span class="sh">"</span><span class="p">,</span> <span class="sh">"</span><span class="s">ollama/llama3.3</span><span class="sh">"</span><span class="p">],</span>
+    <span class="p">),</span>
+    <span class="n">name</span><span class="o">=</span><span class="sh">"</span><span class="s">time_agent</span><span class="sh">"</span><span class="p">,</span>
     <span class="n">instruction</span><span class="o">=</span><span class="sh">"</span><span class="s">You are a helpful assistant.</span><span class="sh">"</span><span class="p">,</span>
-    <span class="n">tools</span><span class="o">=</span><span class="p">[]</span>
+    <span class="n">tools</span><span class="o">=</span><span class="p">[],</span>
 <span class="p">)</span>
 </code></pre></div></div>
+
+<ul>
+  <li>
+    <p><strong>Besides <code class="language-plaintext highlighter-rouge">GOOGLE_API_KEY</code>, you must also set <code class="language-plaintext highlighter-rouge">OPENAI_API_KEY</code> and <code class="language-plaintext highlighter-rouge">ANTHROPIC_API_KEY</code></strong></p>
+  </li>
+  <li>
+    <p><strong>Run your agent via command-line/web interface, or by sending requests to an API server</strong></p>
+  </li>
+</ul>
+
+<p>The source code of the MCP agent network can be downloaded from <a href="/kxk302/src/litellm_agent/agent.py">here</a>.</p>
 
 <h3 id="memory-">Memory <a name="memory"></a></h3>
 
@@ -546,8 +641,8 @@ Agents CLI consists of the following 7 <strong>skill files</strong>:</p>
 
 <ul>
   <li>workflow:	Manages the end-to-end development</li>
-  <li>adk-code:	Teaches your coding agent how to write clean ADK code using Python</li>
   <li>scaffold:	Handles initial project generation</li>
+  <li>adk-code:	Teaches your coding agent how to write clean ADK code using Python</li>
   <li>eval:	Defines the quality assurance framework, and testing specifications for non-deterministic AI agents</li>
   <li>deploy: Manages infrastructure provisioning and cloud deployment options</li>
   <li>publish: Handles agent identity, registration, and discovery within enterprise ecosystems</li>
@@ -633,6 +728,12 @@ Please read the inline comments for further explanantion.</p>
     <span class="p">],</span>
 <span class="p">)</span>
 </code></pre></div></div>
+
+<ul>
+  <li><strong>Run your agent via command-line/web interface, or by sending requests to an API server</strong></li>
+</ul>
+
+<p>The source code of the workflow agent network can be downloaded from <a href="/kxk302/src/workflow_agent/agent.py">here</a>.</p>
 
 <h2 id="references-">References <a name="references"></a></h2>
 
