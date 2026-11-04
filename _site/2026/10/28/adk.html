@@ -86,7 +86,7 @@ on Python version of ADK.</p>
       <li><a href="#workflows">Workflows</a></li>
     </ol>
   </li>
-  <li><a href="#comparison">Comparison with NeuroSan</a></li>
+  <li><a href="#comparison">Neuro San vs. ADK</a></li>
   <li><a href="#references">References</a></li>
 </ol>
 
@@ -670,7 +670,7 @@ response for a turn into <code class="language-plaintext highlighter-rouge">sess
       <li>Examples: Modify prompts, filter PII, or validate LLM outputs.</li>
     </ul>
   </li>
-  <li><strong>Tool callbakcs</strong>
+  <li><strong>Tool callbacks</strong>
     <ul>
       <li>Execute before or after a tool is called</li>
       <li>Examples: Validate tool arguments, enforce API permissions, or return cached results</li>
@@ -780,10 +780,60 @@ Please read the inline comments for further explanantion.</p>
 
 <p>The source code of the workflow agent network can be downloaded from <a href="/kxk302/src/workflow_agent/agent.py">here</a>.</p>
 
-<h2 id="comparison-with-neurosan-">Comparison with NeuroSan <a name="comparison"></a></h2>
+<h2 id="neuro-san-vs-adk-">Neuro San vs. ADK <a name="comparison"></a></h2>
 
-<p>You can find a comparison of NeuroSan with ADK (and a few other agent frameworks)
-<a href="https://github.com/cognizant-ai-lab/neuro-san-studio/blob/main/docs/comparative_analysis.md">here</a>.</p>
+<p>We Built a multi-agent flight search on both frameworks. Here’s what we found.</p>
+
+<h3 id="tldr-key-takeaways">TL;DR: Key Takeaways</h3>
+
+<ul>
+  <li>We found Neuro San and ADK very similar in features and design philosphy.</li>
+  <li>Their main diference is that Neuro San defines agent networks in a text (.hocon) file, whereas ADK defines it in code
+(Python, TypeScript, etc.).</li>
+  <li>There are tradeoffs for these representions: Defining an agent network in a .hocon file could make the framework
+easier to use for non-programmers, whereas defining the agent network in code could provide more expressiveness.</li>
+  <li>Neuro San and ADK also handle senstivie data such as PII differently: ADK handles sensitive data via callbacks
+before/after LLM models are used, whereas Neuro San has a dedicated channel called <code class="language-plaintext highlighter-rouge">sly_data</code>, where the
+contents are kept out of reach of LLM models.</li>
+</ul>
+
+<h3 id="why-neuro-san-and-adk-are-worth-comparing">Why Neuro San and ADK Are Worth Comparing</h3>
+
+<p>ADK and Neuro San are both open source, multi-agent frameworks that allow users to quickly build sophisticated
+multi-agent applications. They provide very similar features, though at times, the same feature is implemented
+differently. Such differences could decide which framework should be used for which use case.</p>
+
+<h3 id="getting-to-know-neuro-san">Getting to Know Neuro San</h3>
+
+<p>Neuro AI system of agent networks (Neuro SAN) is an open-source, data-driven multi-agent orchestration framework designed
+to simplify and accelerate the development of collaborative AI systems. It allows users – from machine learning engineers
+to business domain experts —- to quickly build sophisticated multi-agent applications without extensive coding, using declarative configuration files (in HOCON format).</p>
+
+<p>Neuro SAN enables multiple large language model (LLM)-powered agents to collaboratively solve complex tasks, dynamically
+delegating subtasks through adaptive inter-agent communication protocols. This approach addresses the limitations inherent
+to single-agent systems, where no single model has all the expertise or context necessary for multifaceted problems.</p>
+
+<h3 id="getting-to-know-adk">Getting to Know ADK</h3>
+
+<p>The Google Agent Development Kit (ADK) is an open-source framework designed for building, evaluating, and deploying
+intelligent multi-agent AI systems. Moving beyond standalone LLM text generation, ADK provides a robust architectural
+foundation enabling autonomous agents to reason, collaborate, utilize external tools, and manage complex, long-running
+asynchronous workflows.</p>
+
+<p>Key features of the framework include flexible multi-agent orchestration for hierarchical task delegation, deterministic
+workflow loops, and native support for bidirectional real-time streaming. Additionally, ADK offers built-in primitives for
+short-term session state and memory management, seamless tool integration, and a comprehensive developer UI with CLI tooling for step-by-step trace inspection and multi-turn evaluation.</p>
+
+<h3 id="when-to-use-each">When to Use Each</h3>
+
+<p>Neuro San agent networks are defined in text (.hocon) files, allowing non-programmers to more easily prototype multi-agent
+networks. Neuro San also offers a mechanism called <code class="language-plaintext highlighter-rouge">sly_data</code>, which facilitates safe handling and transfer of sensitive
+data between agents without exposing it directly to any language models. ADK defines agent networks in code (multiple
+programming languages like Python, TypeSCript, etc. are supported), which offers more expressiveness. ADK also offers more
+built-in primitives to manage short-term conversational context, and long-term cross-session user memory.</p>
+
+<p>So, if you are a non-programmer and deal with sensitive data, Neuro San may be a better choice. Whereas, if you need
+maximum expressiveness and more built-in support for short/long term context, ADK may be a better choice.</p>
 
 <h2 id="references-">References <a name="references"></a></h2>
 
