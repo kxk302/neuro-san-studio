@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-11-04T12:14:39-05:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework
+<?xml version="1.0" encoding="utf-8"?><feed xmlns="http://www.w3.org/2005/Atom" ><generator uri="https://jekyllrb.com/" version="4.4.1">Jekyll</generator><link href="http://localhost:4000/kxk302/feed.xml" rel="self" type="application/atom+xml" /><link href="http://localhost:4000/kxk302/" rel="alternate" type="text/html" /><updated>2026-11-04T14:24:25-05:00</updated><id>http://localhost:4000/kxk302/feed.xml</id><title type="html">Kaivan’s Blog</title><subtitle>AI/ML Research, LLMs, and Software Engineering</subtitle><entry><title type="html">Google Agent Development Kit (ADK)</title><link href="http://localhost:4000/kxk302/2026/10/28/adk.html" rel="alternate" type="text/html" title="Google Agent Development Kit (ADK)" /><published>2026-10-28T00:00:00-04:00</published><updated>2026-10-28T00:00:00-04:00</updated><id>http://localhost:4000/kxk302/2026/10/28/adk</id><content type="html" xml:base="http://localhost:4000/kxk302/2026/10/28/adk.html"><![CDATA[<p>This blog post explains Google <a href="https://adk.dev/">ADK</a>, an open-source, code-first framework
 designed to build, debug, evaluate, and deploy AI agents and multi-agent systems. ADK supports
 five programming languages: Python, Go, TypeScript, Java, and Kotlin. In this blog, we focus
 on Python version of ADK.</p>
@@ -20,7 +20,21 @@ on Python version of ADK.</p>
       <li><a href="#workflows">Workflows</a></li>
     </ol>
   </li>
-  <li><a href="#comparison">Neuro San vs. ADK</a></li>
+  <li><a href="#comparison">Neuro San vs. ADK</a>
+    <ol>
+      <li><a href="#tldr">TL;DR: Key Takeaways</a></li>
+      <li><a href="#comparing">Why Neuro San and ADK Are Worth Comparing</a></li>
+      <li><a href="#neurosan">Getting to Know Neuro San</a></li>
+      <li><a href="#adk">Getting to Know ADK</a></li>
+      <li><a href="#usage">When to Use Each</a></li>
+      <li><a href="#ns_strength">Neuro San Strengths</a></li>
+      <li><a href="#ns_limit">Neuro San Limitations</a></li>
+      <li><a href="#adk_strength">ADK Strengths</a></li>
+      <li><a href="#adk_limit">ADK Limitations</a></li>
+      <li><a href="#ns_agent">Building an Agentic System with Neuro San</a></li>
+      <li><a href="#adk_agent">Building an Agentic System with ADK</a></li>
+    </ol>
+  </li>
   <li><a href="#references">References</a></li>
 </ol>
 
@@ -718,7 +732,7 @@ Please read the inline comments for further explanantion.</p>
 
 <p>We Built a multi-agent flight search on both frameworks. Here’s what we found.</p>
 
-<h3 id="tldr-key-takeaways">TL;DR: Key Takeaways</h3>
+<h3 id="tldr-key-takeaway-s">TL;DR: Key Takeaway <a name="tldr"></a>s</h3>
 
 <ul>
   <li>We found Neuro San and ADK very similar in features and design philosphy.</li>
@@ -731,13 +745,13 @@ before/after LLM models are used, whereas Neuro San has a dedicated channel call
 contents are kept out of reach of LLM models.</li>
 </ul>
 
-<h3 id="why-neuro-san-and-adk-are-worth-comparing">Why Neuro San and ADK Are Worth Comparing</h3>
+<h3 id="why-neuro-san-and-adk-are-worth-comparing-">Why Neuro San and ADK Are Worth Comparing <a name="comparing"></a></h3>
 
 <p>ADK and Neuro San are both open source, multi-agent frameworks that allow users to quickly build sophisticated
 multi-agent applications. They provide very similar features, though at times, the same feature is implemented
 differently. Such differences could decide which framework should be used for which use case.</p>
 
-<h3 id="getting-to-know-neuro-san">Getting to Know Neuro San</h3>
+<h3 id="getting-to-know-neuro-san-">Getting to Know Neuro San <a name="neurosan"></a></h3>
 
 <p>Neuro AI system of agent networks (Neuro SAN) is an open-source, data-driven multi-agent orchestration framework designed
 to simplify and accelerate the development of collaborative AI systems. It allows users – from machine learning engineers
@@ -747,7 +761,7 @@ to business domain experts —- to quickly build sophisticated multi-agent appli
 delegating subtasks through adaptive inter-agent communication protocols. This approach addresses the limitations inherent
 to single-agent systems, where no single model has all the expertise or context necessary for multifaceted problems.</p>
 
-<h3 id="getting-to-know-adk">Getting to Know ADK</h3>
+<h3 id="getting-to-know-adk-">Getting to Know ADK <a name="adk"></a></h3>
 
 <p>The Google Agent Development Kit (ADK) is an open-source framework designed for building, evaluating, and deploying
 intelligent multi-agent AI systems. Moving beyond standalone LLM text generation, ADK provides a robust architectural
@@ -758,7 +772,7 @@ asynchronous workflows.</p>
 workflow loops, and native support for bidirectional real-time streaming. Additionally, ADK offers built-in primitives for
 short-term session state and memory management, seamless tool integration, and a comprehensive developer UI with CLI tooling for step-by-step trace inspection and multi-turn evaluation.</p>
 
-<h3 id="when-to-use-each">When to Use Each</h3>
+<h3 id="when-to-use-each-">When to Use Each <a name="usage"></a></h3>
 
 <p>Neuro San agent networks are defined in text (.hocon) files, allowing non-programmers to more easily prototype multi-agent
 networks. Neuro San also offers a mechanism called <code class="language-plaintext highlighter-rouge">sly_data</code>, which facilitates safe handling and transfer of sensitive
@@ -769,11 +783,7 @@ built-in primitives to manage short-term conversational context, and long-term c
 <p>So, if you are a non-programmer and deal with sensitive data, Neuro San may be a better choice. Whereas, if you need
 maximum expressiveness and more built-in support for short/long term context, ADK may be a better choice.</p>
 
-<h3 id="strengths-and-limitations">Strengths and Limitations</h3>
-
-<p>In this section we discuss strengths and limitations of Neuro San and ADK.</p>
-
-<h4 id="neuro-san-strengths">Neuro San Strengths</h4>
+<h3 id="neuro-san-strengths-">Neuro San Strengths <a name="ns_strength"></a></h3>
 
 <ul>
   <li>Data-Driven Configuration: Entire agent networks are defined declaratively via simple HOCON files, empowering
@@ -787,7 +797,7 @@ generate a new custom agent network for it.</li>
 and transfer of sensitive data between agents without exposing it directly to any language models.</li>
 </ul>
 
-<h4 id="neuro-san-limitations">Neuro San Limitations</h4>
+<h3 id="neuro-san-limitations-">Neuro San Limitations <a name="ns_limit"></a></h3>
 
 <ul>
   <li>
@@ -801,7 +811,7 @@ not support TypeScript, Java, etc.</p>
   </li>
 </ul>
 
-<h4 id="adk-strengths">ADK Strengths</h4>
+<h3 id="adk-strengths-">ADK Strengths <a name="adk_strength"></a></h3>
 
 <ul>
   <li>ADK provides built-in multi-agent orchestration: ADK makes it easy to build complex agent systems using
@@ -825,7 +835,7 @@ not support TypeScript, Java, etc.</p>
   </li>
 </ul>
 
-<h4 id="adk-limitations">ADK Limitations</h4>
+<h3 id="adk-limitations-">ADK Limitations <a name="adk_limit"></a></h3>
 
 <ul>
   <li>
@@ -852,11 +862,9 @@ parameters for your custom function.</p>
   </li>
 </ul>
 
-<h3 id="building-an-agentic-system">Building an Agentic System</h3>
+<h3 id="building-an-agentic-system-with-neuro-san-">Building an Agentic System with Neuro San <a name="ns_agent"></a></h3>
 
-<h4 id="building-on-neuro-san">Building on Neuro San</h4>
-
-<h4 id="building-on-adk">Building on ADK</h4>
+<h3 id="building-an-agentic-system-with-adk-">Building an Agentic System with ADK <a name="adk_agent"></a></h3>
 
 <h2 id="references-">References <a name="references"></a></h2>
 
