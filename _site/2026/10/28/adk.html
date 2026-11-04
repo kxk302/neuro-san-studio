@@ -835,6 +835,95 @@ built-in primitives to manage short-term conversational context, and long-term c
 <p>So, if you are a non-programmer and deal with sensitive data, Neuro San may be a better choice. Whereas, if you need
 maximum expressiveness and more built-in support for short/long term context, ADK may be a better choice.</p>
 
+<h3 id="strengths-and-limitations">Strengths and Limitations</h3>
+
+<p>In this section we discuss strengths and limitations of Neuro San and ADK.</p>
+
+<h4 id="neuro-san-strengths">Neuro San Strengths</h4>
+
+<ul>
+  <li>Data-Driven Configuration: Entire agent networks are defined declaratively via simple HOCON files, empowering
+technical and non-technical stakeholders to design agent interactions intuitively.</li>
+  <li>Extensible and Cloud-Agnostic: Compatible with a wide variety of LLM providers (OpenAI, Anthropic, Azure,
+Ollama, etc.) and deployable in diverse environments (local machines, containers, or cloud infrastructures).</li>
+  <li>Dynamic Agent Network Designer: Includes a meta-agent called the Agent Network Designer – essentially, an
+agent that creates other agent networks. It can take a high-level description of a use-case as input and
+generate a new custom agent network for it.</li>
+  <li>Handling of sensitive data: Neuro San also offers a mechanism called <code class="language-plaintext highlighter-rouge">sly_data</code>, which facilitates safe handling
+and transfer of sensitive data between agents without exposing it directly to any language models.</li>
+</ul>
+
+<h4 id="neuro-san-limitations">Neuro San Limitations</h4>
+
+<ul>
+  <li>
+    <p>Smaller ecosystem and community: While Neuro San community is growing fast, compared with Google ADK,
+Neuro SAN has a smaller community, and fewer third-party integrations. Finding troubleshooting resources
+and production examples may be more difficult.</p>
+  </li>
+  <li>
+    <p>Programming language support: Neuro San is primarily a Python-native framework, and unlike ADK, does
+not support TypeScript, Java, etc.</p>
+  </li>
+</ul>
+
+<h4 id="adk-strengths">ADK Strengths</h4>
+
+<ul>
+  <li>ADK provides built-in multi-agent orchestration: ADK makes it easy to build complex agent systems using
+    <ul>
+      <li>Specialized agents: each agent is responsible for a specific task.</li>
+      <li>Hierarchical delegation: a parent agent decides which specialized agent should handle a request.</li>
+      <li>Sequential/parallel execution: ADK provides <code class="language-plaintext highlighter-rouge">SequentialAgent</code> and <code class="language-plaintext highlighter-rouge">ParallelAgent</code> that control execution order.</li>
+      <li>Workflow control: ADK provides <code class="language-plaintext highlighter-rouge">LoopAgent</code> for repeated execution.</li>
+    </ul>
+  </li>
+  <li>ADK provides much of the infrastructure needed to develop, test, and deploy AI agents
+    <ul>
+      <li>Tools: Mechanisms for agents to call Python functions, APIs, other agents, and external services.</li>
+      <li>Session management: To track conversation history and session state.</li>
+      <li>Memory: To store/retrieve information across different sessions, using a memory service.</li>
+      <li>Callbacks: Hooks to execute custom logic before or after agent, model, and tool operations.</li>
+      <li>Debugging: Local development UI (adk web) to inspect agent execution, events, tool calls, and state.</li>
+      <li>Evlauation: Framework for testing agent responses.</li>
+      <li>Deployment: Integration with deployment targets such as Vertex AI Agent Engine or Cloud Run.</li>
+    </ul>
+  </li>
+</ul>
+
+<h4 id="adk-limitations">ADK Limitations</h4>
+
+<ul>
+  <li>
+    <p>Model compatibility: Some ADK capabilities are tightly integrated with Gemini APIs. For example,
+Gemini supports native bidirectional audio streaming. The ADK leverages this underlying Gemini API
+feature seamlessly, resulting in low latency and a natural, conversational voice assistant loop in
+just a few lines of code. When using OpenAI, Anthropic, or other models, their APIs might require
+a multi-step, segmented pipeline (e.g., Speech-to-Text, then LLM text generation, and finally
+Text-to-Speech); The ADK would have to manually orchestrate separate external services rather than
+relying on a single native model capability.</p>
+  </li>
+  <li>
+    <p>Tool Compatibility: Built-in tools such as <code class="language-plaintext highlighter-rouge">google_search</code> have API-specific restrictions and
+combining built-in tools with custom functions can require special workarounds. For example,
+suppose you are building a travel assistant agent that needs to search for current weather in
+a destination city and then save that forecast directly into your SQL database. You use
+<code class="language-plaintext highlighter-rouge">google_search</code> built-in tool for searching, and write a custom function called <code class="language-plaintext highlighter-rouge">save_to_database</code>
+to save the results to database. Gemini’s API, enabling built-in Google Search, sometimes restricts
+how the model executes custom function calls in the exact same model turn. The Workaround is to
+configure a multi-step orchestration pipeline: Turn 1: Pass the user’s prompt to Gemini with
+<code class="language-plaintext highlighter-rouge">google_search</code> enabled to fetch the live search data. Turn 2: Pass the summary into a separate
+model call with your <code class="language-plaintext highlighter-rouge">save_to_database</code> tool active, allowing the model to generate the structured
+parameters for your custom function.</p>
+  </li>
+</ul>
+
+<h3 id="building-an-agentic-system">Building an Agentic System</h3>
+
+<h4 id="building-on-neuro-san">Building on Neuro San</h4>
+
+<h4 id="building-on-adk">Building on ADK</h4>
+
 <h2 id="references-">References <a name="references"></a></h2>
 
 <ul>
